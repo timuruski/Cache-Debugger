@@ -5,13 +5,13 @@
 	<key>Author</key>
 	<string>Flirt Software</string>
 	<key>CFBundleDisplayName</key>
-	<string>CacheStatus</string>
+	<string>Cache Debugger</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.flirtsw.cache-status-extension</string>
+	<string>com.flirtsw.extensions.cache-debugger</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>0.1</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>Chrome</key>
@@ -49,7 +49,7 @@
 		</array>
 	</dict>
 	<key>Description</key>
-	<string>A toolbar button for debugging HTML5 caching.</string>
+	<string>A tool for debugging HTML5 caching.</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
@@ -63,7 +63,7 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>http://www.flirtsw.com/cache-status-extension/update</string>
+	<string>http://www.flirtsw.com/safari-extensions/cache-debugger/update</string>
 	<key>Website</key>
 	<string>http://www.flirtsw.com/cache-status-extension</string>
 </dict>
