@@ -20,7 +20,7 @@ function requestStatus () {
 
 
 // Display the manifest inspector
-var manifestInspector;
+var manifestInspector, manifestInspector_body, manifestInspector_closeBtn;
 function showManifestInspector () {
     // Download manifest inspector
     var manifestURL = document.getElementsByTagName('html')[0].getAttribute('manifest');
@@ -33,43 +33,56 @@ function showManifestInspector () {
     request.open('GET', manifestURL);
     request.send(null);
 }
+function hideManifestInspector () {
+    var body = document.getElementsByTagName('body')[0];
+    body.removeChild(manifestInspector);
+}
 
 function onLoadCacheManifest (text) {
     var body = document.getElementsByTagName('body')[0];
-    console.log(manifestInspector);
+    var html = '<p id="manifestInspector_closeBtn"><span>x</span></p>' + 
+               '<p id="manifestInspector_title">Manifest</p>' + 
+               '<pre id="manifestInspector_body">' + text + '</pre>';
+    // console.log(manifestInspector);
     if(manifestInspector == null) {
         manifestInspector = document.createElement('div');
         manifestInspector.id = 'manifestInspector';
-        manifestInspector.innerHTML = '<p class="close-btn"><span>x</span></p><p class="title">Manifest</p><pre class="body">' + text + '</pre>';
+        manifestInspector.innerHTML = html;
     }
     body.appendChild(manifestInspector);
+    manifestInspector_body = document.getElementById('manifestInspector_body');
+    manifestInspector_closeBtn = document.getElementById('manifestInspector_closeBtn');
     // manifestInspector.addEventListener('mousedown', startDragManifestInspector);
-    manifestInspector.onmousedown = startDragManifestInspector;
+    manifestInspector_closeBtn.addEventListener('click', hideManifestInspector, false);
+    manifestInspector.addEventListener('mousedown', startDragManifestInspector, false);
 }
 
 function startDragManifestInspector (event) {
-    event.preventDefault();
-    event.preventDefault();
+    if(event.target === manifestInspector_body) return;
+    // console.log('target: ' + event.target + ', currentTarget: ' + event.currentTarget);
     // Initial click position
     var startX = event.clientX, 
         startY = event.clientY, 
         originX = manifestInspector.offsetLeft, 
         originY = manifestInspector.offsetTop;
-    // Should probably capture existing event and bubble it through
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    
+    event.stopPropagation();
+    event.preventDefault();
+    window.addEventListener('mousemove', onMouseMove, true);
+    window.addEventListener('mouseup', onMouseUp, true);
+    
+    
     function onMouseMove (event) {
         var deltaX = startX - originX, 
-            deltaY = startY - originY, 
-            mouseX = event.clientX + window.scrollX, 
-            mouseY = event.clientY + window.scrollY;
-        // console.log('x: ' + mouseX + ', y: ' + mouseY);
+            deltaY = startY - originY; 
+            // mouseX = event.clientX + window.scrollX,
+            // mouseY = event.clientY + window.scrollY;
         manifestInspector.style.left = (event.clientX - deltaX) + 'px';
         manifestInspector.style.top = (event.clientY - deltaY) + 'px';
     }
     function onMouseUp (event) {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
+        window.removeEventListener('mousemove', onMouseMove, true);
+        window.removeEventListener('mouseup', onMouseUp, true);
     }
 }
 
