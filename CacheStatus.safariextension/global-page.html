@@ -1,0 +1,47 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<script type="text/javascript">
+		// Toolbar item click
+		function performCommand (event) {
+			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
+			if (event.command === 'CacheStatus') {
+				pageProxy.dispatchMessage('showManifestInspector');
+			}
+		}
+		// Toolbar item disable loop
+		function validateCommand (event) {
+			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
+			if (event.command === 'CacheStatus') {
+				event.target.disabled = !event.target.browserWindow.activeTab.url;
+				if(!event.target.browserWindow.activeTab.url) event.target.badge = null;
+				pageProxy.dispatchMessage('requestStatus');
+			}
+		}
+		
+		// Proxy messages from injected scripts.
+		function handleMessage (event) {
+			if(event.name === 'sendStatus') {
+				for(var k in safari.extension.toolbarItems) {
+					// Find the window for this event and update its toolbar item.
+					var toolbarItem = safari.extension.toolbarItems[k];
+					toolbarItem.disabled = (event.message === 0 || event.message === null);
+					if(toolbarItem.browserWindow === event.target.browserWindow) {
+						toolbarItem.badge = event.message;
+						toolbarItem.toolTip = event.target.browserWindow.activeTab.url;
+					} else {
+						toolbarItem.badge = null;
+						toolbarItem.toolTip = '';
+					}
+				}
+			}
+		}
+		
+		// if event handlers are in the global HTML page,
+		// register with application:
+		safari.application.addEventListener('command', performCommand, false);
+		safari.application.addEventListener('validate', validateCommand, false);
+		safari.application.addEventListener('message', handleMessage, false);
+	</script>
+</head>
+</html>

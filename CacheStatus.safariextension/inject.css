@@ -1,0 +1,23 @@
+#manifestInspector {
+	display: relative;
+	position: absolute;
+	top: 20px; left: 20px;
+	width: 250px;
+	margin: 0; padding: 4px 16px 8px;
+	background: rgba(0, 0, 0, 0.75) url(hud-title-bg.png) repeat-x;
+	color: rgb(255, 255, 255);
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.50);
+	-webkit-border-radius: 8px;
+}
+#manifestInspector .close-btn {
+	margin: 0; padding: 0;
+	position: absolute;
+}
+/*div.hud .close span { display: none; }*/
+#manifestInspector .title {
+	margin: 0;
+	text-align: center;
+	text-shadow: rgba(0, 0, 0, 0.746094) 0px 1px 0px;
+}
