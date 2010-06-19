@@ -22,15 +22,15 @@
 		<array>
 			<dict>
 				<key>Identifier</key>
-				<string>CacheStatus</string>
+				<string>Cache Inspector</string>
 				<key>Image</key>
 				<string>toolbar-icon.png</string>
 				<key>Label</key>
-				<string>CacheStatus</string>
+				<string>Cache Inspector</string>
 				<key>Palette Label</key>
-				<string>CacheStatus</string>
+				<string>Cache Inspector</string>
 				<key>Tool Tip</key>
-				<string>CacheStatus</string>
+				<string></string>
 			</dict>
 		</array>
 	</dict>

@@ -5,14 +5,14 @@
 		// Toolbar item click
 		function onCommand (event) {
 			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
-			if (event.command === 'CacheStatus') {
+			if (event.command === 'Cache Inspector') {
 				pageProxy.dispatchMessage('toggleManifestInspector');
 			}
 		}
 		// Toolbar item disable loop
 		function onValidate (event) {
 			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
-			if (event.command === 'CacheStatus') {
+			if (event.command === 'Cache Inspector') {
 				event.target.disabled = !event.target.browserWindow.activeTab.url;
 				if(!event.target.browserWindow.activeTab.url) event.target.badge = null;
 				pageProxy.dispatchMessage('updateToolbarItem');

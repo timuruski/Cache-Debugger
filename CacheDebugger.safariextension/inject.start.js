@@ -62,13 +62,13 @@ function onUpdateReady (event) {
     updateToolbarItem();
 }
 
-applicationCache.addEventListener('oncached', onCached, false);
-applicationCache.addEventListener('onchecking', onChecking, false);
-applicationCache.addEventListener('ondownloading', onDownloading, false);
-applicationCache.addEventListener('onerror', onError, false);
-applicationCache.addEventListener('onnoupdate', onNoUpdate, false);
-applicationCache.addEventListener('onprogress', onProgress, false);
-applicationCache.addEventListener('onupdateready', onUpdateReady, false);
+// applicationCache.addEventListener('oncached', onCached, false);
+// applicationCache.addEventListener('onchecking', onChecking, false);
+// applicationCache.addEventListener('ondownloading', onDownloading, false);
+// applicationCache.addEventListener('onerror', onError, false);
+// applicationCache.addEventListener('onnoupdate', onNoUpdate, false);
+// applicationCache.addEventListener('onprogress', onProgress, false);
+// applicationCache.addEventListener('onupdateready', onUpdateReady, false);
 
 // applicationCache.swapCache
 // Replaces the active cache with the latest version.
@@ -137,12 +137,14 @@ function startDragManifestInspector (event) {
     window.addEventListener('mouseup', onMouseUp, true);
     
     function onMouseMove (event) {
+        // Prevent inspector from being dragged off the screen.
+        if(event.clientX < 0 || event.clientY < 0) return;
         var deltaX = startX - originX, 
-            deltaY = startY - originY; 
-            // mouseX = event.clientX + window.scrollX,
-            // mouseY = event.clientY + window.scrollY;
-        manifestInspector.style.left = (event.clientX - deltaX) + 'px';
-        manifestInspector.style.top = (event.clientY - deltaY) + 'px';
+            deltaY = startY - originY, 
+            mouseX = event.clientX // + window.scrollX,
+            mouseY = event.clientY // + window.scrollY;
+        manifestInspector.style.left = (mouseX - deltaX) + 'px';
+        manifestInspector.style.top = (mouseY - deltaY) + 'px';
     }
     function onMouseUp (event) {
         window.removeEventListener('mousemove', onMouseMove, true);
