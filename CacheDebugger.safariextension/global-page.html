@@ -3,32 +3,44 @@
 <head>
 	<script type="text/javascript">
 		// Toolbar item click
-		function performCommand (event) {
+		function onCommand (event) {
 			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
 			if (event.command === 'CacheStatus') {
-				pageProxy.dispatchMessage('showManifestInspector');
+				pageProxy.dispatchMessage('toggleManifestInspector');
 			}
 		}
 		// Toolbar item disable loop
-		function validateCommand (event) {
+		function onValidate (event) {
 			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
 			if (event.command === 'CacheStatus') {
 				event.target.disabled = !event.target.browserWindow.activeTab.url;
 				if(!event.target.browserWindow.activeTab.url) event.target.badge = null;
-				pageProxy.dispatchMessage('requestStatus');
+				pageProxy.dispatchMessage('updateToolbarItem');
 			}
 		}
 		
 		// Proxy messages from injected scripts.
-		function handleMessage (event) {
-			if(event.name === 'sendStatus') {
+		function onMessage (event) {
+			switch(event.name) {
+				case 'updateToolbarItem':
+					updateToolbarItem(event);
+					break;
+			}
+		}
+		
+		function updateToolbarItem (event) {
+			if(event.name === 'updateToolbarItem') {
 				for(var k in safari.extension.toolbarItems) {
 					// Find the window for this event and update its toolbar item.
 					var toolbarItem = safari.extension.toolbarItems[k];
 					toolbarItem.disabled = (event.message === 0 || event.message === null);
 					if(toolbarItem.browserWindow === event.target.browserWindow) {
-						toolbarItem.badge = event.message;
-						toolbarItem.toolTip = event.target.browserWindow.activeTab.url;
+						toolbarItem.badge = event.message.status;
+						// toolbarItem.toolTip = event.target.browserWindow.activeTab.url;
+						var toolTip = 'Status: ' + cacheStatusToString(event.message.status) + '\n' + 
+						    'Manifest: ' + event.message.manifest;
+						console.log(toolTip);
+						toolbarItem.toolTip = toolTip;
 					} else {
 						toolbarItem.badge = null;
 						toolbarItem.toolTip = '';
@@ -36,12 +48,28 @@
 				}
 			}
 		}
+		function cacheStatusToString (status) {
+			switch(status) {
+				case 0:
+					return 'UNCACHED';
+				case 1:
+					return 'IDLE';
+				case 2:
+					return 'CHECKING';
+				case 3:
+					return 'DOWNLOADING';
+				case 4:
+					return 'UPDATEREADY';
+			}
+			// else
+			return '';
+		}
 		
 		// if event handlers are in the global HTML page,
 		// register with application:
-		safari.application.addEventListener('command', performCommand, false);
-		safari.application.addEventListener('validate', validateCommand, false);
-		safari.application.addEventListener('message', handleMessage, false);
+		safari.application.addEventListener('command', onCommand, false);
+		safari.application.addEventListener('validate', onValidate, false);
+		safari.application.addEventListener('message', onMessage, false);
 	</script>
 </head>
 </html>

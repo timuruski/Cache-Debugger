@@ -1,12 +1,18 @@
-// Event handling
+// Setup
+// =====
+var manifestURL = document.getElementsByTagName('html')[0].getAttribute('manifest');
+
+
+// Extension proxy event handling
+// ==============================
 function handleMessage (event) {
     // console.log('Message: ' + event.name);
     switch(event.name) {
-        case 'requestStatus':
-            requestStatus();
+        case 'updateToolbarItem':
+            updateToolbarItem();
             break;
-        case 'showManifestInspector':
-            showManifestInspector();
+        case 'toggleManifestInspector':
+            toggleManifestInspector();
             break;
     }
 }
@@ -14,16 +20,73 @@ function handleMessage (event) {
 safari.self.addEventListener('message', handleMessage, false);
 
 // Updating the toolbar item
-function requestStatus () {
-    safari.self.tab.dispatchMessage('sendStatus', window.applicationCache.status);
+function updateToolbarItem () {
+    var message = {};
+    message.status = window.applicationCache.status;
+    message.manifest = manifestURL;
+    safari.self.tab.dispatchMessage('updateToolbarItem', message);
 }
 
 
+// Monitor events from the applicationCache object
+// ===============================================
+function onCached (event) {
+    // Sent when the update process finishes for the first time
+    // —that is, the first time an application cache is saved.
+    updateToolbarItem();
+}
+function onChecking (event) {
+    // Sent when the cache update process begins.
+    updateToolbarItem();
+}
+function onDownloading (event) {
+    // Sent when the update process begins downloading 
+    // resources in the manifest file.
+    updateToolbarItem();
+}
+function onError (event) {
+    // Sent when an error occurs.
+}
+function onNoUpdate (event) {
+    // Sent when the update process finishes but the 
+    // manifest file does not change.
+    updateToolbarItem();
+}
+function onProgress (event) {
+    // Sent when each resource in the manifest file begins to download.
+}
+function onUpdateReady (event) {
+    // Sent when there is an existing application cache, 
+    // the update process finishes, and there is a new 
+    // application cache ready for use.
+    updateToolbarItem();
+}
+
+applicationCache.addEventListener('oncached', onCached, false);
+applicationCache.addEventListener('onchecking', onChecking, false);
+applicationCache.addEventListener('ondownloading', onDownloading, false);
+applicationCache.addEventListener('onerror', onError, false);
+applicationCache.addEventListener('onnoupdate', onNoUpdate, false);
+applicationCache.addEventListener('onprogress', onProgress, false);
+applicationCache.addEventListener('onupdateready', onUpdateReady, false);
+
+// applicationCache.swapCache
+// Replaces the active cache with the latest version.
+
+// applicationCache.update
+// Manually triggers the update process.
+
+// DOMApplicationCache.UNCACHED =    0
+// DOMApplicationCache.IDLE =        1
+// DOMApplicationCache.CHECKING =    2
+// DOMApplicationCache.DOWNLOADING = 3
+// DOMApplicationCache.UPDATEREADY = 4
+
 // Display the manifest inspector
+// ==============================
 var manifestInspector, manifestInspector_body, manifestInspector_closeBtn;
 function showManifestInspector () {
     // Download manifest inspector
-    var manifestURL = document.getElementsByTagName('html')[0].getAttribute('manifest');
     var request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if(request.readyState === 4 /*&& request.status == 200*/) {
@@ -36,6 +99,9 @@ function showManifestInspector () {
 function hideManifestInspector () {
     var body = document.getElementsByTagName('body')[0];
     body.removeChild(manifestInspector);
+}
+function toggleManifestInspector () {
+    document.getElementById('manifestInspector') ? hideManifestInspector() : showManifestInspector();
 }
 
 function onLoadCacheManifest (text) {
@@ -59,7 +125,6 @@ function onLoadCacheManifest (text) {
 
 function startDragManifestInspector (event) {
     if(event.target === manifestInspector_body) return;
-    // console.log('target: ' + event.target + ', currentTarget: ' + event.currentTarget);
     // Initial click position
     var startX = event.clientX, 
         startY = event.clientY, 
@@ -70,7 +135,6 @@ function startDragManifestInspector (event) {
     event.preventDefault();
     window.addEventListener('mousemove', onMouseMove, true);
     window.addEventListener('mouseup', onMouseUp, true);
-    
     
     function onMouseMove (event) {
         var deltaX = startX - originX, 
