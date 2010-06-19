@@ -4,15 +4,11 @@ A Safari 5 extension for debugging HTML5 offline caches. Displays the cache stat
 
 ## Version History ##
 
----
-
 ### Version 1.0: ###
 * Initial release
 
 
 ## Roadmap ##
-
----
 
 ### Version 1.1: ###
 * Toolbar icon responds to applicationCache events

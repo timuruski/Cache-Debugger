@@ -7,11 +7,11 @@
 	<key>CFBundleDisplayName</key>
 	<string>Cache Debugger</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.flirtsw.safari-extensions.cache-debugger</string>
+	<string>com.flirtsw.safari.cache-debugger</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.1</string>
+	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>Chrome</key>
@@ -63,8 +63,8 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>http://www.flirtsw.com/safari-extensions/updates.plist</string>
+	<string>http://www.flirtsw.com/safari/updates.plist</string>
 	<key>Website</key>
-	<string>http://www.flirtsw.com/safari-extensions/cache-debugger</string>
+	<string>http://www.flirtsw.com/</string>
 </dict>
 </plist>
