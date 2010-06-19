@@ -7,7 +7,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Cache Debugger</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.flirtsw.extensions.cache-debugger</string>
+	<string>com.flirtsw.safari-extensions.cache-debugger</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
@@ -24,7 +24,7 @@
 				<key>Identifier</key>
 				<string>CacheStatus</string>
 				<key>Image</key>
-				<string>button.png</string>
+				<string>toolbar-icon.png</string>
 				<key>Label</key>
 				<string>CacheStatus</string>
 				<key>Palette Label</key>
@@ -40,7 +40,7 @@
 		<dict>
 			<key>Start</key>
 			<array>
-				<string>inject-start.js</string>
+				<string>inject.start.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
@@ -63,8 +63,8 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>http://www.flirtsw.com/safari-extensions/cache-debugger/update</string>
+	<string>http://www.flirtsw.com/safari-extensions/updates.plist</string>
 	<key>Website</key>
-	<string>http://www.flirtsw.com/cache-status-extension</string>
+	<string>http://www.flirtsw.com/safari-extensions/cache-debugger</string>
 </dict>
 </plist>
