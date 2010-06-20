@@ -1,10 +1,11 @@
 /* Basic HUD inspector style */
+html { overflow: auto; }
 #manifestInspector {
 	display: relative;
 	position: absolute;
 	top: 20px; left: 20px; z-index: 9000;
 	min-width: 250px; max-width: 600px;
-	margin: 0; padding: 4px 16px 8px;
+	margin: 0; padding: 4px 4px 4px 16px;
 	background: rgba(0, 0, 0, 0.75) url(hud-title-bg.png) repeat-x;
 	color: rgb(255, 255, 255);
 	font-family: Helvetica, Arial, sans-serif;
@@ -32,7 +33,54 @@
     overflow: auto;
 }
 
-/* Custom scrollbars go here, eventually. */
-/*::-webkit-scrollbar { width: 13px; height: 13px; }*/
-/*#manifestInspector::-webkit-scrollbar-track { background: red; }*/
-/*#manifestInspector::-webkit-resizer { display: none; }*/
+/* Custom scrollbars, 
+   using the lovely scrollbars from http://orderedlist.com */
+#manifestInspector ::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+}
+
+/* Turn on single button up on top, and down on bottom */
+#manifestInspector ::-webkit-scrollbar-button:start:decrement,
+#manifestInspector ::-webkit-scrollbar-button:end:increment {
+    display: none;
+}
+
+/* Turn off the down area up on top, and up area on bottom */
+#manifestInspector ::-webkit-scrollbar-button:start:increment,
+#manifestInspector ::-webkit-scrollbar-button:end:decrement {
+    display: none;
+}
+
+#manifestInspector ::-webkit-scrollbar-track {
+    -webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
+    border-width:7px;
+}
+
+/* Top area above thumb and below up button */
+#manifestInspector ::-webkit-scrollbar-track-piece:start {
+    border: none;
+}
+
+/* Bottom area below thumb and down button */
+#manifestInspector ::-webkit-scrollbar-track-piece:end {
+    border: none;
+}
+
+/* Track below and above */
+#manifestInspector ::-webkit-scrollbar-track-piece {
+    background-color: transparent;
+}
+
+/* The thumb itself */
+#manifestInspector ::-webkit-scrollbar-thumb {
+    -webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
+    border-width:7px;
+    -webkit-transition:0.2s linear;
+}
+
+/* Corner */
+#manifestInspector ::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
