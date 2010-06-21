@@ -38,9 +38,9 @@
 	<dict>
 		<key>Scripts</key>
 		<dict>
-			<key>Start</key>
+			<key>End</key>
 			<array>
-				<string>inject.start.js</string>
+				<string>inject.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
