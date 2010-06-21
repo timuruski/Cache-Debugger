@@ -13,9 +13,11 @@
 		function onValidate (event) {
 			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
 			if (event.command === 'Cache Inspector') {
-				event.target.disabled = !event.target.browserWindow.activeTab.url;
-				if(!event.target.browserWindow.activeTab.url) event.target.badge = null;
-				pageProxy.dispatchMessage('updateToolbarItem');
+				if(!event.target.browserWindow.activeTab.url) {
+					event.target.disabled = true;
+					event.target.badge = null;
+				}
+				if(pageProxy) pageProxy.dispatchMessage('updateToolbarItem');
 			}
 		}
 		
