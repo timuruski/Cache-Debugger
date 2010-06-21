@@ -112,8 +112,8 @@ function toggleManifestInspector () {
 }
 
 function onLoadCacheManifest (text) {
-    var body = document.getElementsByTagName('body')[0];
-    var html = '<p id="manifestInspector_closeBtn"><span>x</span></p>' + 
+    var body = document.getElementsByTagName('body')[0], 
+        html = '<p id="manifestInspector_closeBtn"><span>x</span></p>' + 
                '<p id="manifestInspector_title">Manifest</p>' + 
                '<pre id="manifestInspector_body">' + text + '</pre>';
     // console.log(manifestInspector);

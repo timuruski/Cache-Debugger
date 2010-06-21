@@ -31,15 +31,16 @@
 		}
 		
 		function updateToolbarItem (event) {
+			var toolbarItem, tooltip;
 			if(event.name === 'updateToolbarItem') {
 				for(var k in safari.extension.toolbarItems) {
 					// Find the window for this event and update its toolbar item.
-					var toolbarItem = safari.extension.toolbarItems[k];
+					toolbarItem = safari.extension.toolbarItems[k];
 					toolbarItem.disabled = (event.message.status === 0 || event.message.status === null);
 					if(toolbarItem.browserWindow === event.target.browserWindow) {
 						toolbarItem.badge = event.message.status;
 						// toolbarItem.toolTip = event.target.browserWindow.activeTab.url;
-						var toolTip = 'Status: ' + cacheStatusToString(event.message.status);
+						toolTip = 'Status: ' + cacheStatusToString(event.message.status);
 						if(event.message.manifest) toolTip = toolTip + '\nManifest: ' + event.message.manifest;
 						toolbarItem.toolTip = toolTip;
 					} else {
