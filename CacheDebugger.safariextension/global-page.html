@@ -31,6 +31,9 @@
 		}
 		
 		function updateToolbarItem (event) {
+			// Ignore updates from non-active tabs.
+			if(event.target !== event.target.browserWindow.activeTab) return;
+			
 			var toolbarItem, tooltip;
 			if(event.name === 'updateToolbarItem') {
 				for(var k in safari.extension.toolbarItems) {
