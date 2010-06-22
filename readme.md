@@ -4,6 +4,15 @@ A Safari 5 extension for debugging HTML5 offline caches. Displays the cache stat
 
 ## Version History ##
 
+### Version 1.0.1 ###
+* Added: Styled inspector scrollbars.
+* Added: Toolbar-item now monitors applicationCache events and updates accordingly.
+* Improved: Inspector drag behavior, more like OS X windows.
+* Fixed: Improved install/startup state, toolbar-items are disabled by default. 
+* Fixed: Removed some cases were toolbar-item wouldn't display correct state. 
+* Fixed: Non-active tabs could trigger toolbar-item state change.
+* Fixed: Toolbar-item was enabled on a page that wasn't cached.
+
 ### Version 1.0: ###
 * Initial release
 
@@ -11,7 +20,7 @@ A Safari 5 extension for debugging HTML5 offline caches. Displays the cache stat
 ## Roadmap ##
 
 ### Version 1.1: ###
-* Toolbar icon responds to applicationCache events, shows error state.
+* Toolbar icon responds to applicationCache events, shows error state. *done*
 * Buttons in the inspector for swapping and updating the cache
 * Style inspector scrollbar *done*
 * Animate inspector hide/show
