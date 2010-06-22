@@ -2,6 +2,24 @@
 <html>
 <head>
 	<script type="text/javascript">
+		// Startup
+		function startup () {
+			// Events
+			safari.application.addEventListener('command', onCommand, false);
+			safari.application.addEventListener('validate', onValidate, false);
+			safari.application.addEventListener('message', onMessage, false);
+			
+			// Disable toolbar-items by default, request updates.
+			var toolbarItem, pageProxy;
+			for(var k in safari.extension.toolbarItems) {
+				toolbarItem = safari.extension.toolbarItems[k];
+				toolbarItem.disabled = true;
+				toolbarItem.browserWindow.activeTab.page
+				pageProxy = toolbarItem.browserWindow.activeTab.page;
+				pageProxy.dispatchMessage('updateToolbarItem');
+			}
+		}
+		
 		// Toolbar item click
 		function onCommand (event) {
 			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
@@ -11,12 +29,13 @@
 		}
 		// Toolbar item disable loop
 		function onValidate (event) {
-			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
+			// console.log(event.target);
+			var pageProxy = event.target.browserWindow.activeTab.page;
 			if (event.command === 'Cache Inspector') {
-				if(!event.target.browserWindow.activeTab.url) {
-					event.target.disabled = true;
-					event.target.badge = null;
-				}
+				// Disable button between validations.
+				// Causes a minor flicker on window focus.
+				event.target.disabled = true;
+				event.target.badge = null;
 				if(pageProxy) pageProxy.dispatchMessage('updateToolbarItem');
 			}
 		}
@@ -32,24 +51,19 @@
 		
 		function updateToolbarItem (event) {
 			// Ignore updates from non-active tabs.
+			// console.log(event.target);
 			if(event.target !== event.target.browserWindow.activeTab) return;
 			
 			var toolbarItem, tooltip;
-			if(event.name === 'updateToolbarItem') {
-				for(var k in safari.extension.toolbarItems) {
-					// Find the window for this event and update its toolbar item.
-					toolbarItem = safari.extension.toolbarItems[k];
+			for(var k in safari.extension.toolbarItems) {
+				// Find the window for this event and update its toolbar item.
+				toolbarItem = safari.extension.toolbarItems[k];
+				if(toolbarItem.browserWindow === event.target.browserWindow) {
 					toolbarItem.disabled = (event.message.status === 0 || event.message.status === null);
-					if(toolbarItem.browserWindow === event.target.browserWindow) {
-						toolbarItem.badge = event.message.status;
-						// toolbarItem.toolTip = event.target.browserWindow.activeTab.url;
-						toolTip = 'Status: ' + cacheStatusToString(event.message.status);
-						if(event.message.manifest) toolTip = toolTip + '\nManifest: ' + event.message.manifest;
-						toolbarItem.toolTip = toolTip;
-					} else {
-						toolbarItem.badge = null;
-						toolbarItem.toolTip = '';
-					}
+					toolbarItem.badge = event.message.status;
+					toolTip = 'Status: ' + cacheStatusToString(event.message.status);
+					if(event.message.manifest) toolTip = toolTip + '\nManifest: ' + event.message.manifest;
+					toolbarItem.toolTip = toolTip;
 				}
 			}
 		}
@@ -70,11 +84,8 @@
 			return '';
 		}
 		
-		// if event handlers are in the global HTML page,
-		// register with application:
-		safari.application.addEventListener('command', onCommand, false);
-		safari.application.addEventListener('validate', onValidate, false);
-		safari.application.addEventListener('message', onMessage, false);
+		// Let's go!
+		startup();
 	</script>
 </head>
 </html>

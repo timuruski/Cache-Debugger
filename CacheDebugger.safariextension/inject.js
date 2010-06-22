@@ -94,6 +94,7 @@ applicationCache.addEventListener('updateready', onUpdateReady, false);
 var manifestInspector, manifestInspector_body, manifestInspector_closeBtn;
 function showManifestInspector () {
     // Download manifest inspector
+    // This should probably be moved into the global HTML page
     var request = new XMLHttpRequest();
     request.onreadystatechange = function () {
         if(request.readyState === 4 /*&& request.status == 200*/) {
