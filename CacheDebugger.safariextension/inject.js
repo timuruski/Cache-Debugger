@@ -145,14 +145,17 @@ function startDragManifestInspector (event) {
     window.addEventListener('mouseup', onMouseUp, true);
     
     function onMouseMove (event) {
-        // Prevent inspector from being dragged off the screen.
-        if(event.clientX < 0 || event.clientY < 0) return;
+        console.log(manifestInspector);
         var deltaX = startX - originX, 
             deltaY = startY - originY, 
-            mouseX = event.clientX // + window.scrollX,
-            mouseY = event.clientY // + window.scrollY;
-        manifestInspector.style.left = (mouseX - deltaX) + 'px';
-        manifestInspector.style.top = (mouseY - deltaY) + 'px';
+            mouseX = event.clientX, // + window.scrollX,
+            mouseY = event.clientY, // + window.scrollY;
+            posX = (mouseX - deltaX), 
+            posY = (mouseY - deltaY);
+        // Prevent inspector from being dragged off the screen.
+        // Tries to mimic window behavior in OS X.
+        if((mouseX >= 0)) manifestInspector.style.left = posX + 'px';
+        manifestInspector.style.top = ( (posY >= 0) ? posY : 0 ) + 'px';
     }
     function onMouseUp (event) {
         window.removeEventListener('mousemove', onMouseMove, true);
