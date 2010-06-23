@@ -3,74 +3,108 @@
 <head>
 	<title>Cache Inspector</title>
 	<script type="text/javascript">
-		var cacheInspector, cacheInspector_body, cacheInspector_closeBtn;
-		function showManifestInspector () {
-			var body = document.getElementsByTagName('body')[0];
-		    body.appendChild(cacheInspector);
-		}
-		function hideManifestInspector () {
-		    var body = document.getElementsByTagName('body')[0];
-		    body.removeChild(cacheInspector);
-		}
-		function toggleManifestInspector () {
-		    document.getElementById('cacheInspector') ? hideManifestInspector() : showManifestInspector();
-		}
-		
+		var cacheInspector, 
+			cacheInspector_body, 
+			cacheInspector_closeBtn, 
+			cacheInspector_status, 
+			cacheInspector_manifestURL, 
+			cacheInspector_manifestParsed, 
+			cacheInspector_manifestRaw;
+			
 		document.addEventListener('DOMContentLoaded', init);
 		
 		function init (event) {
 			cacheInspector = document.getElementById('cacheInspector');
-		    cacheInspector_body = document.getElementById('cacheInspector_body');
-		    cacheInspector_closeBtn = document.getElementById('cacheInspector_closeBtn');
-		    // cacheInspector.addEventListener('mousedown', startDragManifestInspector);
-		    cacheInspector_closeBtn.addEventListener('click', hideManifestInspector, false);
-		    cacheInspector.addEventListener('mousedown', startDragManifestInspector, false);
+			cacheInspector_body = document.getElementById('cacheInspector_body');
+			cacheInspector_closeBtn = document.getElementById('cacheInspector_closeBtn');
+			cacheInspector_status = document.getElementById('cacheInspector_status');
+			cacheInspector_manifestURL = document.getElementById('cacheInspector_manifestURL');
+			cacheInspector_manifestParsed = document.getElementById('cacheInspector_manifestParsed');
+			cacheInspector_manifestRaw = document.getElementById('cacheInspector_manifestRaw');
+			cacheInspector.addEventListener('mousedown', startDragCacheInspector, false);
+			cacheInspector_closeBtn.addEventListener('click', hideCacheInspector, false);
+			// cacheInspector_manifestRaw.addEventListener('mousedown', startDragCacheInspector, false);
+			//
+			hideCacheInspector();
+			// loadManifest('https://www.me.com/mail/app.manifest');
 		}
+		
+		function loadManifest (url) {
+			var r = new XMLHttpRequest();
+			r.addEventListener('readystatechange', onManifestLoaded);
+			r.open('GET', url);
+			r.send();
+			function onManifestLoaded (event) {
+				if(r.readyState === 4) displayManifestRaw(r.responseText);
+			}
+		}
+		function displayManifestRaw (str) {
+			cacheInspector_manifestRaw.innerText = str;
+			showCacheInspector();
+		}
+		
+		// Manifest inspecto
+		function showCacheInspector () {
+			// var body = document.getElementsByTagName('body')[0];
+			// body.appendChild(cacheInspector);
+			// cacheInspector.style.display = 'block';
+			cacheInspector.style.opacity = 1;
+		}
+		function hideCacheInspector () {
+			// var body = document.getElementsByTagName('body')[0];
+			// body.removeChild(cacheInspector);
+			// cacheInspector.style.display = 'none';
+			cacheInspector.style.opacity = 0;
+		}
+		function toggleCacheInspector () {
+			document.getElementById('cacheInspector') ? hideCacheInspector() : showCacheInspector();
+		}
+		
+		function startDragCacheInspector (event) {
+			if(event.target === cacheInspector_manifestRaw) return;
+			// Initial click position
+			var startX = event.clientX, 
+				startY = event.clientY, 
+				originX = cacheInspector.offsetLeft, 
+				originY = cacheInspector.offsetTop;
 
-		function startDragManifestInspector (event) {
-		    if(event.target === cacheInspector_body) return;
-		    // Initial click position
-		    var startX = event.clientX, 
-		        startY = event.clientY, 
-		        originX = cacheInspector.offsetLeft, 
-		        originY = cacheInspector.offsetTop;
+			event.stopPropagation();
+			event.preventDefault();
+			window.addEventListener('mousemove', onMouseMove, true);
+			window.addEventListener('mouseup', onMouseUp, true);
 
-		    event.stopPropagation();
-		    event.preventDefault();
-		    window.addEventListener('mousemove', onMouseMove, true);
-		    window.addEventListener('mouseup', onMouseUp, true);
-
-		    function onMouseMove (event) {
-		        // Prevent inspector from being dragged off the screen.
-		        if(event.clientX < 0 || event.clientY < 0) return;
-		        var deltaX = startX - originX, 
-		            deltaY = startY - originY, 
-		            mouseX = event.clientX // + window.scrollX,
-		            mouseY = event.clientY // + window.scrollY;
-		        cacheInspector.style.left = (mouseX - deltaX) + 'px';
-		        cacheInspector.style.top = (mouseY - deltaY) + 'px';
-		    }
-		    function onMouseUp (event) {
-		        window.removeEventListener('mousemove', onMouseMove, true);
-		        window.removeEventListener('mouseup', onMouseUp, true);
-		    }
+			function onMouseMove (event) {
+				// Prevent inspector from being dragged off the screen.
+				if(event.clientX < 0 || event.clientY < 0) return;
+				var deltaX = startX - originX, 
+					deltaY = startY - originY, 
+					mouseX = event.clientX // + window.scrollX,
+					mouseY = event.clientY // + window.scrollY;
+				cacheInspector.style.left = (mouseX - deltaX) + 'px';
+				cacheInspector.style.top = (mouseY - deltaY) + 'px';
+			}
+			function onMouseUp (event) {
+				window.removeEventListener('mousemove', onMouseMove, true);
+				window.removeEventListener('mouseup', onMouseUp, true);
+			}
 		}
 	</script>
 	<style type="text/css">
 		/* Cache Inspector */
 		html { overflow: auto; }
 		#cacheInspector {
-			display: relative;
 			position: absolute;
-			top: 20px; left: 20px; z-index: 9000;
+			top: 20px; left: 220px; z-index: 9000;
 			min-width: 250px; max-width: 600px;
-			margin: 0; padding: 4px 4px 4px 16px;
+			margin: 0; padding: 4px 0;
 			background: rgba(0, 0, 0, 0.75) url(hud-title-bg.png) repeat-x;
 			color: rgb(255, 255, 255);
 			font-family: Helvetica, Arial, sans-serif;
 			font-size: 11px;
 			-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.50);
 			-webkit-border-radius: 8px;
+			/* */
+			-webkit-transition: opacity 0.3s ease-out;
 		}
 		#cacheInspector_closeBtn {
 			display: block;
@@ -87,73 +121,81 @@
 			text-align: center;
 			text-shadow: rgba(0, 0, 0, 0.746094) 0px 1px 0px;
 		}
-		#cacheInspector_body {
-		    max-height: 500px;
-		    overflow: auto;
+		#cacheInspector_manifestRaw {
+			max-height: 500px;
+			overflow: auto;
+			/*background: rgba(255, 255, 255, 0.75);
+						color: rgb(51, 51, 51);*/
+			padding: 4px 8px;
 		}
 
 		/* Custom scrollbars, 
 		   using the lovely scrollbars from http://orderedlist.com */
 		#cacheInspector ::-webkit-scrollbar {
-		    width: 15px;
-		    height: 15px;
+			width: 15px;
+			height: 15px;
 		}
 
 		/* Turn on single button up on top, and down on bottom */
 		#cacheInspector ::-webkit-scrollbar-button:start:decrement,
 		#cacheInspector ::-webkit-scrollbar-button:end:increment {
-		    display: none;
+			display: none;
 		}
 
 		/* Turn off the down area up on top, and up area on bottom */
 		#cacheInspector ::-webkit-scrollbar-button:start:increment,
 		#cacheInspector ::-webkit-scrollbar-button:end:decrement {
-		    display: none;
+			display: none;
 		}
 
 		#cacheInspector ::-webkit-scrollbar-track {
-		    -webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
-		    border-width:7px;
+			-webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
+			border-width:7px;
 		}
 
 		/* Top area above thumb and below up button */
 		#cacheInspector ::-webkit-scrollbar-track-piece:start {
-		    border: none;
+			border: none;
 		}
 
 		/* Bottom area below thumb and down button */
 		#cacheInspector ::-webkit-scrollbar-track-piece:end {
-		    border: none;
+			border: none;
 		}
 
 		/* Track below and above */
 		#cacheInspector ::-webkit-scrollbar-track-piece {
-		    background-color: transparent;
+			background-color: transparent;
 		}
 
 		/* The thumb itself */
 		#cacheInspector ::-webkit-scrollbar-thumb {
-		    -webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
-		    border-width:7px;
-		    -webkit-transition:0.2s linear;
+			-webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
+			border-width:7px;
+			-webkit-transition:0.2s linear;
 		}
 
 		/* Corner */
 		#cacheInspector ::-webkit-scrollbar-corner {
-		    background-color: transparent;
+			background-color: transparent;
 		}
 	</style>
 </head>
 <body>
 	<div id="container">
+		<ul>
+			<li><a href="https://www.me.com/mail/app.manifest" onclick="loadManifest(this.href); return false;">Load Mobile Me manifest</a></li>
+			<li><a href="http://html5demos.com/html5demo.manifest" onclick="loadManifest(this.href); return false;">Load HTML5 Demos manifest</a></li>
+		</ul>
 		<div id="cacheInspector">
-			<p id="cacheInspector_closeBtn"><a onclick="hideCacheInspector();"><span>x</span></a></p>
-			<p id="cacheInspector_title">Cache Inspector</p>
-			<pre id="cacheInspector_body">CACHE MANIFEST
-
-# rev 1
-index.html
-images/foobar.png</pre>
+			<div id="header">
+				<p id="cacheInspector_closeBtn"><a onclick="hideCacheInspector();"><span>x</span></a></p>
+				<p id="cacheInspector_title">Cache Inspector</p>
+			</div>
+			<div id="cacheInspector_status"><a href="#" onclick="reloadCacheStatus(); return false;">r</a>Status: IDLE</div>
+			<div id="cacheInspector_manifestURL">Manifest: /offline/cache.manifest</div>
+			<div id="cacheInspector_manifestParsed"></div>
+			<pre id="cacheInspector_manifestRaw"></pre>
 		</div>
 	</div>
 </body>
