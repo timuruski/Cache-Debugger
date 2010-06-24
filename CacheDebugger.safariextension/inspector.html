@@ -25,8 +25,9 @@
 			cacheInspector_closeBtn.addEventListener('click', hideCacheInspector, false);
 			// cacheInspector_manifestRaw.addEventListener('mousedown', startDragCacheInspector, false);
 			//
-			hideCacheInspector();
-			// loadManifest('https://www.me.com/mail/app.manifest');
+			// hideCacheInspector();
+			// loadManifest('../mobile-me.manifest');
+			// loadManifest('../html5demo.manifest');
 		}
 		
 		function loadManifest (url) {
@@ -90,15 +91,17 @@
 		}
 	</script>
 	<style type="text/css">
-		/* Cache Inspector */
 		html { overflow: auto; }
+		body { background: url('../../../../Pictures/Wallpaper/Flow2.jpg') no-repeat scroll top left; }
+		
+		/* Cache Inspector */
 		#cacheInspector {
 			position: absolute;
-			top: 20px; left: 220px; z-index: 9000;
+			top: 70px; left: 30px; z-index: 9000;
 			min-width: 250px; max-width: 600px;
 			margin: 0; padding: 4px 0;
 			background: rgba(0, 0, 0, 0.75) url(hud-title-bg.png) repeat-x;
-			color: rgb(255, 255, 255);
+			color: rgb(173, 173, 173);
 			font-family: Helvetica, Arial, sans-serif;
 			font-size: 11px;
 			-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.50);
@@ -106,6 +109,9 @@
 			/* */
 			-webkit-transition: opacity 0.3s ease-out;
 		}
+/*		#cacheInspector a { color: rgb(255, 255, 255); text-decoration: none; }*/
+		#cacheInspector a { color: rgb(173, 173, 173); text-decoration: none; }
+		#cacheInspector a:hover { color: rgb(255, 255, 255); }
 		#cacheInspector_closeBtn {
 			display: block;
 			position: absolute;
@@ -116,21 +122,54 @@
 		}
 		#cacheInspector_closeBtn:hover { background-position: -32px 0; }
 		#cacheInspector_closeBtn span { display: none; }
-		#cacheInspector_title {
-			margin: 0;
-			text-align: center;
-			text-shadow: rgba(0, 0, 0, 0.746094) 0px 1px 0px;
-		}
+		#cacheInspector_title { color: rgb(232, 232, 232); font: 11px Helvetica, Arial, sans-serif; margin: 0; text-align: center; text-shadow: rgba(0, 0, 0, 0.746094) 0px 1px 0px; }
+		#cacheInspector_body { margin: 0; padding: 12px; }
+		#cacheInspector_status { margin: 0 4px 2px; padding: 0; }
+		/*#cacheInspector_manifestURL { margin: 0 4px; padding: 0; }*/
+		#cacheInspector_status img { margin: 0 4px 0 -10px; }
+		#cacheInspector_manifestURL img { margin: 0 4px 0 -8px; }
+		#cacheInspector_status img, 
+		#cacheInspector_manifestURL img { padding: 0; opacity: 0.0; -webkit-transition: opacity 0.1s linear; }
+		#cacheInspector_status:hover img, 
+		#cacheInspector_manifestURL:hover img { opacity: 1.0; }
 		#cacheInspector_manifestRaw {
 			max-height: 500px;
 			overflow: auto;
 			/*background: rgba(255, 255, 255, 0.75);
-						color: rgb(51, 51, 51);*/
+			color: rgb(51, 51, 51);*/
 			padding: 4px 8px;
 		}
-
-		/* Custom scrollbars, 
-		   using the lovely scrollbars from http://orderedlist.com */
+		#cacheInspector_manifestParsed { clear: left; margin: 8px 0 0; }
+		#cacheInspector_manifestParsed h2 { font: bold 12px Helvetica, Arial, sans-serif; }
+		#cacheInspector_manifestParsed ul { margin: 0; padding: 0; }
+		#cacheInspector_manifestParsed li { margin: 4px 0; padding: 0; list-style: none; }
+		
+		.segmented { margin: 8px 0; padding: 0; }
+		.segmented li { background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#1D1D20)); border: 1px solid #999;
+		            padding: 2px 12px; margin: 0; list-style: none; display: block; float: left;}
+		.segmented li:first-child { -webkit-border-top-left-radius: 4px; -webkit-border-bottom-left-radius: 4px; }
+		.segmented li:last-child { -webkit-border-top-right-radius: 4px; -webkit-border-bottom-right-radius: 4px;  border-left: none; }
+		.segmented .active { background: -webkit-gradient(linear, left top, left bottom, from(#575857), to(#3B3B41)); }
+		
+		.httpCode {
+			font-weight: bold;
+			color: rgb(51, 51, 51);
+			text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px;
+			-webkit-border-radius: 6px;
+			-webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.20);
+			margin: 0 6px 0 0; padding: 0 5px;
+		}
+		.httpCode.successful { color: #293A15; background: #68913F; }
+		a:hover .httpCode.successful { background: #76A149; }
+		.httpCode.redirect { color: #162C3A; background: #3A80A4; }
+		a:hover .httpCode.redirect { background: #4B99C9; }
+		.httpCode.clientError { color: #371C1D; background: #A33C42; }
+		a:hover .httpCode.clientError { background: #B23B3A; }
+		.httpCode.serverError { color: #371C1D; background: #A33C42; }
+		a:hover .httpCode.serverError { background: #B23B3A; }
+		
+		/* @group Custom Scrollbars */
+		/* Based on the lovely scrollbars from http://orderedlist.com */
 		#cacheInspector ::-webkit-scrollbar {
 			width: 15px;
 			height: 15px;
@@ -179,23 +218,56 @@
 		#cacheInspector ::-webkit-scrollbar-corner {
 			background-color: transparent;
 		}
+		/* @end */
 	</style>
 </head>
 <body>
 	<div id="container">
 		<ul>
-			<li><a href="https://www.me.com/mail/app.manifest" onclick="loadManifest(this.href); return false;">Load Mobile Me manifest</a></li>
-			<li><a href="http://html5demos.com/html5demo.manifest" onclick="loadManifest(this.href); return false;">Load HTML5 Demos manifest</a></li>
+			<li><a href="../mobile-me.manifest" onclick="loadManifest(this.href); return false;">Load Mobile Me manifest</a></li>
+			<li><a href="../html5demo.manifest" onclick="loadManifest(this.href); return false;">Load HTML5 Demos manifest</a></li>
 		</ul>
 		<div id="cacheInspector">
-			<div id="header">
+			<div id="cacheInspector_header">
 				<p id="cacheInspector_closeBtn"><a onclick="hideCacheInspector();"><span>x</span></a></p>
 				<p id="cacheInspector_title">Cache Inspector</p>
 			</div>
-			<div id="cacheInspector_status"><a href="#" onclick="reloadCacheStatus(); return false;">r</a>Status: IDLE</div>
-			<div id="cacheInspector_manifestURL">Manifest: /offline/cache.manifest</div>
-			<div id="cacheInspector_manifestParsed"></div>
-			<pre id="cacheInspector_manifestRaw"></pre>
+			<div id="cacheInspector_body">
+				<div id="cacheInspector_status"><a id="cacheInspector_reloadButton" href="#" onclick="reloadCacheStatus(); return false;" title="Update cache status"><img src="reload_6x7.png" />Status: IDLE</a></div>
+				<div id="cacheInspector_manifestURL"><a id="" href="../html5demo.manifest" title="Go to cache manifest"><img src="arrow_right_alt1_8x8.png" />Manifest: /offline/cache.manifest</a></div>
+				<div id="cacheInspector_manifest">
+					<ul class="segmented">
+						<li class="active"><a href="#parsed" onclick="showParsedManifest(); return false;">Parsed</a></li>
+						<li><a href="#raw" onclick="showRawManifest(); return false;">Raw</a></li>
+					</ul>
+					<div id="cacheInspector_manifestParsed">
+						<h2>Cached:</h2>
+						<ul>
+							<li><a href="#"><span class="httpCode successful">200</span>https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css</a></li>
+							<li><a href="#"><span class="httpCode redirect">301</span>https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png</a></li>
+							<li><a href="#"><span class="httpCode clientError">404</span>https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif</a></li>
+							<li><a href="#"><span class="httpCode serverError">500</span>https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png</a></li>
+						</ul>
+						<h2>Network:</h2>
+						<ul>
+							<li>https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css</a></li>
+							<li>https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png</a></li>
+							<li>https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif</a></li>
+							<li>https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png</a></li>
+							<li>https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/badges.png</a></li>
+						</ul>
+						<h2>Offline:</h2>
+						<ul>
+							<li>https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css</a>
+							<li>https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png</a>
+							<li>https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif</a>
+							<li>https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png</a>
+							<li>https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/badges.png</a>
+						</ul>
+					</div>
+					<pre id="cacheInspector_manifestRaw"></pre>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>
