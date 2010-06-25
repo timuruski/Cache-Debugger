@@ -99,7 +99,7 @@
 			position: absolute;
 			top: 70px; left: 30px; z-index: 9000;
 			min-width: 250px; max-width: 600px;
-			margin: 0; padding: 4px 0;
+			margin: 0; padding: 4px 32px 8px;
 			background: rgba(0, 0, 0, 0.75) url(hud-title-bg.png) repeat-x;
 			color: rgb(173, 173, 173);
 			font-family: Helvetica, Arial, sans-serif;
@@ -124,14 +124,11 @@
 		#cacheInspector_closeBtn span { display: none; }
 		#cacheInspector_title { color: rgb(232, 232, 232); font: 11px Helvetica, Arial, sans-serif; margin: 0; text-align: center; text-shadow: rgba(0, 0, 0, 0.746094) 0px 1px 0px; }
 		#cacheInspector_body { margin: 0; padding: 12px; }
-		#cacheInspector_status { margin: 0 4px 2px; padding: 0; }
+		#cacheInspector_status {  }
+		#cacheInspector_manifestURL {  }
 		/*#cacheInspector_manifestURL { margin: 0 4px; padding: 0; }*/
-		#cacheInspector_status img { margin: 0 4px 0 -10px; }
-		#cacheInspector_manifestURL img { margin: 0 4px 0 -8px; }
-		#cacheInspector_status img, 
-		#cacheInspector_manifestURL img { padding: 0; opacity: 0.0; -webkit-transition: opacity 0.1s linear; }
-		#cacheInspector_status:hover img, 
-		#cacheInspector_manifestURL:hover img { opacity: 1.0; }
+		#cacheInspector_status .label, 
+		#cacheInspector_manifestURL .label { font-weight: bold; margin-right: 8px; }
 		#cacheInspector_manifestRaw {
 			max-height: 500px;
 			overflow: auto;
@@ -144,10 +141,12 @@
 		#cacheInspector_manifestParsed ul { margin: 0; padding: 0; }
 		#cacheInspector_manifestParsed li { margin: 4px 0; padding: 0; list-style: none; }
 		
-		.segmented { margin: 8px 0; padding: 0; }
+		.segmented { margin: 8px auto; padding: 0; height: 40px; width: 120px; }
 		.segmented li { background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#1D1D20)); border: 1px solid #999;
+		            padding: 2px 12px; margin: 0; list-style: none; display: block; float: left; }
+/*		.segmented li { background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#1D1D20)); border: 1px solid #999;
 		            padding: 2px 12px; margin: 0; list-style: none; display: block; float: left;}
-		.segmented li:first-child { -webkit-border-top-left-radius: 4px; -webkit-border-bottom-left-radius: 4px; }
+*/		.segmented li:first-child { -webkit-border-top-left-radius: 4px; -webkit-border-bottom-left-radius: 4px; }
 		.segmented li:last-child { -webkit-border-top-right-radius: 4px; -webkit-border-bottom-right-radius: 4px;  border-left: none; }
 		.segmented .active { background: -webkit-gradient(linear, left top, left bottom, from(#575857), to(#3B3B41)); }
 		
@@ -233,12 +232,12 @@
 				<p id="cacheInspector_title">Cache Inspector</p>
 			</div>
 			<div id="cacheInspector_body">
-				<div id="cacheInspector_status"><a id="cacheInspector_reloadButton" href="#" onclick="reloadCacheStatus(); return false;" title="Update cache status"><img src="reload_6x7.png" />Status: IDLE</a></div>
-				<div id="cacheInspector_manifestURL"><a id="" href="../html5demo.manifest" title="Go to cache manifest"><img src="arrow_right_alt1_8x8.png" />Manifest: /offline/cache.manifest</a></div>
+				<div id="cacheInspector_status"><a id="cacheInspector_reloadButton" href="#" onclick="reloadCacheStatus(); return false;" title="Update cache status"><span class="label">Status:</span><span class="value">IDLE</span></a></div>
+				<div id="cacheInspector_expiry"><a id="cacheInspector_reloadButton" href="#" onclick="reloadCacheStatus(); return false;" title="Update cache status"><span class="label">Expiry:</span><span class="value">null</span></a></div>
+				<div id="cacheInspector_manifestURL"><a id="" href="../html5demo.manifest" title="Go to cache manifest"><span class="label">Manifest:</span><span class="value">/offline/cache.manifest</span><span class="httpCode successful">200</span></a></div>
 				<div id="cacheInspector_manifest">
 					<ul class="segmented">
-						<li class="active"><a href="#parsed" onclick="showParsedManifest(); return false;">Parsed</a></li>
-						<li><a href="#raw" onclick="showRawManifest(); return false;">Raw</a></li>
+						<li class="active"><a href="#parsed" onclick="showParsedManifest(); return false;">Parsed</a></li><li><a href="#raw" onclick="showRawManifest(); return false;">Raw</a></li>
 					</ul>
 					<div id="cacheInspector_manifestParsed">
 						<h2>Cached:</h2>
