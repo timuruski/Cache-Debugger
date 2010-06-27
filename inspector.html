@@ -8,7 +8,7 @@
 			cacheInspector_closeBtn, 
 			cacheInspector_status, 
 			cacheInspector_manifestURL, 
-			cacheInspector_manifestParsed, 
+			cacheInspector_manifestDetailed, 
 			cacheInspector_manifestRaw;
 			
 		document.addEventListener('DOMContentLoaded', init);
@@ -19,13 +19,14 @@
 			cacheInspector_closeBtn = document.getElementById('cacheInspector_closeBtn');
 			cacheInspector_status = document.getElementById('cacheInspector_status');
 			cacheInspector_manifestURL = document.getElementById('cacheInspector_manifestURL');
-			cacheInspector_manifestParsed = document.getElementById('cacheInspector_manifestParsed');
+			cacheInspector_manifestDetailed = document.getElementById('cacheInspector_manifestDetailed');
 			cacheInspector_manifestRaw = document.getElementById('cacheInspector_manifestRaw');
 			cacheInspector.addEventListener('mousedown', startDragCacheInspector, false);
 			cacheInspector_closeBtn.addEventListener('click', hideCacheInspector, false);
 			// cacheInspector_manifestRaw.addEventListener('mousedown', startDragCacheInspector, false);
 			//
 			// hideCacheInspector();
+			showRawManifest();
 			// loadManifest('../mobile-me.manifest');
 			// loadManifest('../html5demo.manifest');
 		}
@@ -44,7 +45,33 @@
 			showCacheInspector();
 		}
 		
-		// Manifest inspecto
+		function toggleManifestSection (target) {
+			var p = target.parentElement;
+			p.className = (p.className === 'open') ? 'closed' : 'open';
+		}
+		
+		function showDetailedManifest () {
+			cacheInspector_manifest.className = 'detailed';
+			document.getElementById('cacheInspector_manifest_detailedBtn').className = 'active';
+			document.getElementById('cacheInspector_manifest_rawBtn').className = '';
+		}
+		function showRawManifest () {
+			cacheInspector_manifest.className = 'raw';
+			document.getElementById('cacheInspector_manifest_detailedBtn').className = '';
+			document.getElementById('cacheInspector_manifest_rawBtn').className = 'active';
+		}
+		// function switchManifestView (style) {
+		// 	switch(style) {
+		// 		case 'detailed':
+		// 			cacheInspector_manifest.className = 'detailed';
+		// 			break;
+		// 		case 'raw':
+		// 			cacheInspector_manifest.className = 'raw';
+		// 			break;
+		// 	}
+		// }
+		
+		// Manifest inspector
 		function showCacheInspector () {
 			// var body = document.getElementsByTagName('body')[0];
 			// body.appendChild(cacheInspector);
@@ -62,7 +89,7 @@
 		}
 		
 		function startDragCacheInspector (event) {
-			if(event.target === cacheInspector_manifestRaw) return;
+			if(event.target === cacheInspector_manifestRaw || event.target === cacheInspector_manifestDetailed) return;
 			// Initial click position
 			var startX = event.clientX, 
 				startY = event.clientY, 
@@ -92,15 +119,15 @@
 	</script>
 	<style type="text/css">
 		html { overflow: auto; }
-		body { background: url('mobileme.png') no-repeat scroll top left; }
+		body { margin: 0; padding: 0; /*background: url('mobileme.png') no-repeat scroll top left;*/ }
 		
 		/* Cache Inspector */
 		#cacheInspector {
 			position: absolute;
-			top: 70px; left: 30px; z-index: 9000;
+			top: 20px; left: 20px; z-index: 9000;
 			min-width: 250px; max-width: 600px;
 			/*margin: 0; padding: 4px 32px 8px;*/
-			margin: 0; padding: 0;
+			margin: 0; padding: 0 0 16px;
 			/*background: rgba(0, 0, 0, 0.75) url(CacheDebugger.safariextension/hud-title-bg.png) repeat-x;*/
 			background: rgba(0, 0, 0, 0.80);
 			color: rgb(173, 173, 173);
@@ -124,41 +151,53 @@
 		
 		/* Manifest metadata */
 		#cacheInspector_body { margin: 0; padding: 0; }
-		#cacheInspector_header { margin: 0; padding: 12px 0; }
-		#cacheInspector_header div { margin: 4px 0;}
-		#cacheInspector_status {  padding: 0 8px 0 40px; }
-		#cacheInspector_manifestURL {  padding: 0 8px 0 40px; }
-		#cacheInspector_header .label { font-weight: bold; margin-right: 8px; }
+		#cacheInspector_metadata { margin: 0; padding: 12px 0 0; }
+		#cacheInspector_metadata div { margin: 4px 0 0;}
+		#cacheInspector_status { padding: 0 8px 0 40px; }
+		#cacheInspector_manifestURL { padding: 0 8px 0 40px; }
+		#cacheInspector_manifestURL a:hover { background: url(CacheDebugger.safariextension/arrow_right_alt1_8x8.png) no-repeat top right; padding-right: 8px; }
+		#cacheInspector_metadata .label { font-weight: bold; margin-right: 8px; }
 		/*#cacheInspector_manifestURL { margin: 0 4px; padding: 0; }*/
 		#cacheInspector_manifestHeaders { padding: 0; }
 		#cacheInspector_manifestHeaders .label { margin-left: 40px; }
-		#cacheInspector_manifestHeaders pre { margin: 4px 0 0; padding: 8px 8px 8px 40px; background: rgba(0, 0, 0, 0.20); color: #9A9A9A; }
+		#cacheInspector_manifestHeaders pre { margin: 4px 0 0; padding: 16px 32px 24px 40px; border-top: 1px solid rgba(0, 0, 0, 0.15); border-bottom: 1px solid rgba(255, 255, 255, 0.10); background: rgba(0, 0, 0, 0.20); color: #9A9A9A; }
 		#cacheInspector_manifestHeaders .highlight { color: #FFFFFF; font-weight: bold; }
 		
 		/* Manifest content */
-		#cacheInspector_manifestRaw {
-			max-height: 500px;
-			overflow: auto;
-			/*background: rgba(255, 255, 255, 0.75);
-			color: rgb(51, 51, 51);*/
-			padding: 4px 8px;
+		#cacheInspector_manifest { }
+		#cacheInspector_manifest.detailed #cacheInspector_manifestDetailed { display: block; }
+		#cacheInspector_manifest.detailed #cacheInspector_manifestRaw { display: none; }
+		#cacheInspector_manifest.raw #cacheInspector_manifestDetailed { display: none; }
+		#cacheInspector_manifest.raw #cacheInspector_manifestRaw { display: block; }
+		#cacheInspector_manifestRaw, 
+		#cacheInspector_manifestDetailed {
+			clear: left;
+			max-height: 400px;
+			max-width: 450px;
+			overflow-x: auto;
+			overflow-y: auto;
+			margin-right: 8px;
 		}
-		#cacheInspector_manifestParsed { clear: left; margin: 8px 0 0; }
-		#cacheInspector_manifestParsed h2 { margin-left: 40px; font: bold 12px Helvetica, Arial, sans-serif; }
-		#cacheInspector_manifestParsed ul { margin: 0; padding: 0; }
-		#cacheInspector_manifestParsed li { margin: 0; padding: 4px 8px 4px 40px; list-style: none; }
-		/*#cacheInspector_manifestParsed li:nth-child(even) { background: rgba(255, 255, 255, 0.12); }*/
-		#cacheInspector_manifestParsed li:nth-child(even) { background: rgba(0, 0, 0, 0.20); }
-/*		#cacheInspector_cachedList { }*/
+		#cacheInspector_manifestRaw { margin: 8px 8px 0 40px; padding: 4px 8px 8px 0; }
+		#cacheInspector_manifestDetailed { clear: left; margin: 8px 0 8px 0; }
+		#cacheInspector_manifestDetailed h2 { margin-left: 40px; font: bold 12px Helvetica, Arial, sans-serif; }
+		#cacheInspector_manifestDetailed ul { margin: 0; padding: 0; }
+		#cacheInspector_manifestDetailed li { margin: 0; padding: 4px 32px 4px 40px; list-style: none; }
+		#cacheInspector_manifestDetailed li:nth-child(even) { background: rgba(0, 0, 0, 0.20); }
 		
-		.segmented { margin: 0 auto; padding: 0; height: 20px; width: 120px; cursor: default; }
+		.segmented { margin: -10px 0 0 40px; padding: 0; height: 20px; width: 120px; cursor: default; }
 		.segmented li { background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#1D1D20)); border: 1px solid #999;
 		            padding: 2px 12px; margin: 0; list-style: none; display: block; float: left; }
-/*		.segmented li { background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#1D1D20)); border: 1px solid #999;
-		            padding: 2px 12px; margin: 0; list-style: none; display: block; float: left;}
-*/		.segmented li:first-child { -webkit-border-top-left-radius: 4px; -webkit-border-bottom-left-radius: 4px; }
+		.segmented li:first-child { -webkit-border-top-left-radius: 4px; -webkit-border-bottom-left-radius: 4px; }
 		.segmented li:last-child { -webkit-border-top-right-radius: 4px; -webkit-border-bottom-right-radius: 4px;  border-left: none; }
 		.segmented .active { background: -webkit-gradient(linear, left top, left bottom, from(#575857), to(#3B3B41)); }
+		
+		h2 .icon { position: absolute; top: 3px; left: -12px; display: block; width: 16px; height: 16px; background: url(CacheDebugger.safariextension/hud-icons.png) no-repeat }
+		.open h2, .closed h2 { position: relative; }
+		.open h2 .icon { background-position: 0 0; }
+		.closed h2 .icon { background-position: -16px 0; }
+		.open ul { display: block; }
+		.closed ul { display: none; }
 		
 		.httpCode, .statusCode {
 			font-weight: bold;
@@ -175,92 +214,56 @@
 		a:hover .httpCode.successful { background: #76A149; }
 		.httpCode.redirect { color: #162C3A; background: #3A80A4; }
 		a:hover .httpCode.redirect { background: #4B99C9; }
-		.httpCode.clientError { color: #371C1D; background: #A33C42; }
-		a:hover .httpCode.clientError { background: #B23B3A; }
+		.httpCode.clientError { color: #35251C; background: #B87D59; }
+		a:hover .httpCode.clientError { background: #B87D59; }
 		.httpCode.serverError { color: #371C1D; background: #A33C42; }
 		a:hover .httpCode.serverError { background: #B23B3A; }
 		
-/*		a:hover .httpCode { opacity: 1.0; }
-		.httpCode.successful, 
-		.httpCode.redirect { color: #3F3F3F; background: #7F7F7F; }
-		.httpCode.clientError, 
-		.httpCode.serverError { color: #371C1D; background: #A33C42; }
-		a:hover .httpCode.successful { color: #293A15; background: #68913F; }
-		a:hover .httpCode.redirect { color: #162C3A; background: #3A80A4; }
-		a:hover .httpCode.clientError { color: #371C1D; background: #A33C42; }
-		a:hover .httpCode.serverError { color: #371C1D; background: #A33C42; }
-*/		
+		/*a:hover .httpCode { opacity: 1.0; }
+				.httpCode.successful, 
+				.httpCode.redirect { color: #3F3F3F; background: #7F7F7F; }
+				.httpCode.clientError, 
+				.httpCode.serverError { color: #371C1D; background: #A33C42; }
+				a:hover .httpCode.successful { color: #293A15; background: #68913F; }
+				a:hover .httpCode.redirect { color: #162C3A; background: #3A80A4; }
+				a:hover .httpCode.clientError { color: #371C1D; background: #A33C42; }
+				a:hover .httpCode.serverError { color: #371C1D; background: #A33C42; }*/
+		
 		/* @group Custom Scrollbars */
-		/* Based on the lovely scrollbars from http://orderedlist.com */
-		#cacheInspector ::-webkit-scrollbar {
-			width: 15px;
-			height: 15px;
-		}
-
+		#cacheInspector ::-webkit-scrollbar { width: 11px; height: 11px; margin: 8px; }
 		/* Turn on single button up on top, and down on bottom */
 		#cacheInspector ::-webkit-scrollbar-button:start:decrement,
-		#cacheInspector ::-webkit-scrollbar-button:end:increment {
-			display: none;
-		}
-
+		#cacheInspector ::-webkit-scrollbar-button:end:increment { display: none; }
 		/* Turn off the down area up on top, and up area on bottom */
 		#cacheInspector ::-webkit-scrollbar-button:start:increment,
-		#cacheInspector ::-webkit-scrollbar-button:end:decrement {
-			display: none;
-		}
-
-		#cacheInspector ::-webkit-scrollbar-track {
-			-webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
-			border-width:7px;
-		}
-
+		#cacheInspector ::-webkit-scrollbar-button:end:decrement { display: none; }
+		#cacheInspector ::-webkit-scrollbar-track { -webkit-border-image: url(scrollbar-track.png) 5 / 5px stretch; margin: 8px; }
 		/* Top area above thumb and below up button */
-		#cacheInspector ::-webkit-scrollbar-track-piece:start {
-			border: none;
-		}
-
+		#cacheInspector ::-webkit-scrollbar-track-piece:start { border: none; }
 		/* Bottom area below thumb and down button */
-		#cacheInspector ::-webkit-scrollbar-track-piece:end {
-			border: none;
-		}
-
+		#cacheInspector ::-webkit-scrollbar-track-piece:end { border: none; }
 		/* Track below and above */
-		#cacheInspector ::-webkit-scrollbar-track-piece {
-			background-color: transparent;
-		}
-
+		#cacheInspector ::-webkit-scrollbar-track-piece { background-color: transparent; }
 		/* The thumb itself */
-		#cacheInspector ::-webkit-scrollbar-thumb {
-			-webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
-			border-width:7px;
-			-webkit-transition:0.2s linear;
-		}
-
+		#cacheInspector ::-webkit-scrollbar-thumb { -webkit-border-image: url(scrollbar.png) 5 / 5px stretch; }
 		/* Corner */
-		#cacheInspector ::-webkit-scrollbar-corner {
-			background-color: transparent;
-		}
+		#cacheInspector ::-webkit-scrollbar-corner { background-color: transparent; }
 		/* @end */
 	</style>
 </head>
 <body>
-	<div id="container">
-		<ul>
-			<li><a href="mobile-me.manifest" onclick="loadManifest(this.href); return false;">Load Mobile Me manifest</a></li>
-			<li><a href="html5demo.manifest" onclick="loadManifest(this.href); return false;">Load HTML5 Demos manifest</a></li>
-		</ul>
-		<div id="cacheInspector">
-			<div id="cacheInspector_titlebar">
-				<p id="cacheInspector_closeBtn"><a onclick="hideCacheInspector();"><span>x</span></a></p>
-				<p id="cacheInspector_title">Cache Inspector</p>
-			</div>
-			<div id="cacheInspector_body">
-				<div id="cacheInspector_header">
-					<div id="cacheInspector_status"><a id="cacheInspector_reloadButton" href="#" onclick="reloadCacheStatus(); return false;" title="Update cache status"><span class="statusCode">1</span><span class="label">Status:</span><span class="value">IDLE</span></a></div>
-					<div id="cacheInspector_manifestURL"><a id="" href="html5demo.manifest" title="Go to cache manifest"><span class="httpCode successful">200</span><span class="label">Manifest URL:</span><span class="value">/offline/cache.manifest</span></a></div>
-					<div id="cacheInspector_manifestHeaders">
-						<span class="label">Manifest headers:</span>
-						<pre>Accept-Ranges:bytes
+	<div id="cacheInspector">
+		<div id="cacheInspector_titlebar">
+			<p id="cacheInspector_closeBtn"><a onclick="hideCacheInspector();"><span>x</span></a></p>
+			<p id="cacheInspector_title">Cache Inspector</p>
+		</div>
+		<div id="cacheInspector_body">
+			<div id="cacheInspector_metadata">
+				<div id="cacheInspector_status"><a id="cacheInspector_reloadButton" href="#" onclick="reloadCacheStatus(); return false;" title="Update cache status"><span class="statusCode">1</span><span class="label">Status:</span><span class="value">IDLE</span></a></div>
+				<div id="cacheInspector_manifestURL"><a id="" href="html5demo.manifest" title="Go to cache manifest"><span class="httpCode successful">200</span><span class="label">Manifest URL:</span><span class="value">/offline/cache.manifest</span></a></div>
+				<div id="cacheInspector_manifestHeaders">
+					<span class="label">Manifest headers:</span>
+					<pre>Accept-Ranges:bytes
 <span class="highlight">Cache-Control:private</span>
 Connection:keep-alive
 Content-Encoding:gzip
@@ -272,39 +275,68 @@ Etag:"b3278ab-1e22-4c1a71a0"
 <span class="highlight">Last-Modified:Thu, 17 Jun 2010 19:04:00 GMT</span>
 Server:Apache/1.3.33 (Darwin)
 Vary:Accept-Encoding</pre>
-					</div>
 				</div>
-				<div id="cacheInspector_manifest">
-					<ul class="segmented">
-						<li class="active"><a href="#parsed" onclick="showParsedManifest(); return false;">Parsed</a></li><li><a href="#raw" onclick="showRawManifest(); return false;">Raw</a></li>
-					</ul>
-					<div id="cacheInspector_manifestParsed">
-						<h2>Cached:</h2>
-						<ul id="cacheInspector_cachedList">
-							<li><a href="#"><span class="httpCode successful">200</span>https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css</a></li>
-							<li><a href="#"><span class="httpCode redirect">301</span>https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png</a></li>
-							<li><a href="#"><span class="httpCode clientError">404</span>https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif</a></li>
-							<li><a href="#"><span class="httpCode serverError">500</span>https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png</a></li>
-						</ul>
-						<h2>Network:</h2>
-						<ul id="cacheInspector_networkList">
-							<li><a href="#"><span class="httpCode successful">200</span>https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css</a></li>
-							<li><a href="#"><span class="httpCode redirect">301</span>https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png</a></li>
-							<li><a href="#"><span class="httpCode clientError">404</span>https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif</a></li>
-							<li><a href="#"><span class="httpCode serverError">500</span>https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png</a></li>
-						</ul>
-						<h2>Offline:</h2>
-						<ul id="cacheInspector_offlineList">
-							<li><a href="#"><span class="httpCode successful">200</span>https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css</a></li>
-							<li><a href="#"><span class="httpCode redirect">301</span>https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png</a></li>
-							<li><a href="#"><span class="httpCode clientError">404</span>https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif</a></li>
-							<li><a href="#"><span class="httpCode serverError">500</span>https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png</a></li>
+			</div>
+			<div id="cacheInspector_manifest" class="detailed">
+				<ul class="segmented">
+					<li id="cacheInspector_manifest_detailedBtn"><a href="#parsed" onclick="showDetailedManifest(); return false;">Parsed</a></li><li id="cacheInspector_manifest_rawBtn"><a href="#raw" onclick="showRawManifest(); return false;">Raw</a></li>
+				</ul>
+				<div id="cacheInspector_manifestDetailed">
+					<div id="cacheInspector_cachedList" class="open">
+						<h2 onclick="toggleManifestSection(this);"><span class="icon"></span>Cached:</h2>
+						<ul>
+							<li><a href="#" title="https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css"><span class="httpCode successful">200</span>https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css</a></li>
+							<li><a href="#" title="https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png"><span class="httpCode redirect">301</span>https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png</a></li>
+							<li><a href="#" title="https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif"><span class="httpCode clientError">404</span>https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif</a></li>
+							<li><a href="#" title="https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png"><span class="httpCode serverError">500</span>https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png</a></li>
 						</ul>
 					</div>
-					<pre id="cacheInspector_manifestRaw"></pre>
+					<div id="cacheInspector_networkList" class="open">
+						<h2 onclick="toggleManifestSection(this);"><span class="icon"></span>Network:</h2>
+						<ul>
+							<li><a href="#" title="https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css"><span class="httpCode successful">200</span>https://static2.me.com/my/.../2E47/stylesheet-packed.css</a></li>
+							<li><a href="#" title="https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png"><span class="httpCode redirect">301</span>https://static4.me.com/my/sproutcore/.../icons/shared.png</a></li>
+							<li><a href="#" title="https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif"><span class="httpCode clientError">404</span>https://static3.me.com/my/sproutcore/.../36105/blank.gif</a></li>
+							<li><a href="#" title="https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png"><span class="httpCode serverError">500</span>https://static2.me.com/my/.../app_switcher/sprite.png</a></li>
+						</ul>
+					</div>
+					<div id="cacheInspector_offlineList" class="open">
+						<h2 onclick="toggleManifestSection(this);"><span class="icon"></span>Offline:</h2>
+						<ul>
+							<li><a href="#" title="https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css"><span class="httpCode successful">200</span>https://static2.me.com/my/.../2E47/stylesheet-packed.css</a></li>
+							<li><a href="#" title="https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png"><span class="httpCode redirect">301</span>https://static4.me.com/my/sproutcore/.../icons/shared.png</a></li>
+							<li><a href="#" title="https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif"><span class="httpCode clientError">404</span>https://static3.me.com/my/sproutcore/.../36105/blank.gif</a></li>
+							<li><a href="#" title="https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png"><span class="httpCode serverError">500</span>https://static2.me.com/my/.../app_switcher/sprite.png</a></li>
+						</ul>
+					</div>
 				</div>
+				<pre id="cacheInspector_manifestRaw">CACHE MANIFEST
+# rev 14
+
+CACHE:
+https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css
+https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png
+https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif
+https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png
+
+NETWORK:
+https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css
+https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png
+https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif
+https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png
+
+OFFLINE:
+https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css
+https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png
+https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif
+https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png
+</pre>
 			</div>
 		</div>
 	</div>
+	<ul style="display: none;">
+		<li><a href="mobile-me.manifest" onclick="loadManifest(this.href); return false;">Load Mobile Me manifest</a></li>
+		<li><a href="html5demo.manifest" onclick="loadManifest(this.href); return false;">Load HTML5 Demos manifest</a></li>
+	</ul>
 </body>
 </html>
