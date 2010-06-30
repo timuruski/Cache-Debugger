@@ -68,6 +68,10 @@ function onUpdateReady (event) {
     // application cache ready for use.
     updateToolbarItem();
 }
+function onObsolete (event) {
+    // Fired if the manifest file returns a 404 or 410.
+    // This results in the application cache being deleted.
+}
 
 applicationCache.addEventListener('cached', onCached, false);
 applicationCache.addEventListener('checking', onChecking, false);
@@ -76,9 +80,11 @@ applicationCache.addEventListener('error', onError, false);
 applicationCache.addEventListener('noupdate', onNoUpdate, false);
 // applicationCache.addEventListener('progress', onProgress, false);
 applicationCache.addEventListener('updateready', onUpdateReady, false);
+// applicationCache.addEventListener('obsolete', onObsolete, false);
 
 // applicationCache.swapCache
 // Replaces the active cache with the latest version.
+// Doesn't trigger an event.
 
 // applicationCache.update
 // Manually triggers the update process.
@@ -88,6 +94,7 @@ applicationCache.addEventListener('updateready', onUpdateReady, false);
 // DOMApplicationCache.CHECKING =    2
 // DOMApplicationCache.DOWNLOADING = 3
 // DOMApplicationCache.UPDATEREADY = 4
+// DOMApplicationCache.OBSOLETE    = 5
 
 // Display the manifest inspector
 // ==============================
@@ -145,7 +152,6 @@ function startDragManifestInspector (event) {
     window.addEventListener('mouseup', onMouseUp, true);
     
     function onMouseMove (event) {
-        console.log(manifestInspector);
         var deltaX = startX - originX, 
             deltaY = startY - originY, 
             mouseX = event.clientX, // + window.scrollX,
