@@ -26,7 +26,8 @@
 			// cacheInspector_manifestRaw.addEventListener('mousedown', startDragCacheInspector, false);
 			//
 			// hideCacheInspector();
-			showRawManifest();
+			// showRawManifest();
+			showDetailedManifest();
 			// loadManifest('../mobile-me.manifest');
 			// loadManifest('../html5demo.manifest');
 		}
@@ -153,8 +154,8 @@
 		#cacheInspector_body { margin: 0; padding: 0; }
 		#cacheInspector_metadata { margin: 0; padding: 12px 0 0; }
 		#cacheInspector_metadata div { margin: 4px 0 0;}
-		#cacheInspector_status { padding: 0 8px 0 40px; }
-		#cacheInspector_manifestURL { padding: 0 8px 0 40px; }
+		#cacheInspector_status { padding: 0 8px 0 40px; position: relative;}
+		#cacheInspector_manifestURL { padding: 0 8px 0 40px; position: relative; }
 		#cacheInspector_manifestURL a:hover { background: url(CacheDebugger.safariextension/arrow_right_alt1_8x8.png) no-repeat top right; padding-right: 8px; }
 		#cacheInspector_metadata .label { font-weight: bold; margin-right: 8px; }
 		/*#cacheInspector_manifestURL { margin: 0 4px; padding: 0; }*/
@@ -182,15 +183,16 @@
 		#cacheInspector_manifestDetailed { clear: left; margin: 8px 0 8px 0; }
 		#cacheInspector_manifestDetailed h2 { margin-left: 40px; font: bold 12px Helvetica, Arial, sans-serif; }
 		#cacheInspector_manifestDetailed ul { margin: 0; padding: 0; }
-		#cacheInspector_manifestDetailed li { margin: 0; padding: 4px 32px 4px 40px; list-style: none; }
+		#cacheInspector_manifestDetailed li { margin: 0; padding: 4px 32px 4px 40px; list-style: none; position: relative; }
+		#cacheInspector_manifestDetailed .httpCode { top: 4px; }
 		#cacheInspector_manifestDetailed li:nth-child(even) { background: rgba(0, 0, 0, 0.20); }
 		
-		.segmented { margin: -10px 0 0 40px; padding: 0; height: 20px; width: 120px; cursor: default; }
-		.segmented li { background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#1D1D20)); border: 1px solid #999;
+		#cacheInspector .segmented { margin: -10px 0 0 40px; padding: 0; height: 20px; width: 120px; cursor: default; }
+		#cacheInspector .segmented li { background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#1D1D20)); border: 1px solid #999;
 		            padding: 2px 12px; margin: 0; list-style: none; display: block; float: left; }
-		.segmented li:first-child { -webkit-border-top-left-radius: 4px; -webkit-border-bottom-left-radius: 4px; }
-		.segmented li:last-child { -webkit-border-top-right-radius: 4px; -webkit-border-bottom-right-radius: 4px;  border-left: none; }
-		.segmented .active { background: -webkit-gradient(linear, left top, left bottom, from(#575857), to(#3B3B41)); }
+		#cacheInspector .segmented li:first-child { -webkit-border-top-left-radius: 4px; -webkit-border-bottom-left-radius: 4px; }
+		#cacheInspector .segmented li:last-child { -webkit-border-top-right-radius: 4px; -webkit-border-bottom-right-radius: 4px;  border-left: none; }
+		#cacheInspector .segmented .active { background: -webkit-gradient(linear, left top, left bottom, from(#575857), to(#3B3B41)); }
 		
 		h2 .icon { position: absolute; top: 3px; left: -12px; display: block; width: 16px; height: 16px; background: url(CacheDebugger.safariextension/hud-icons.png) no-repeat }
 		.open h2, .closed h2 { position: relative; }
@@ -200,24 +202,29 @@
 		.closed ul { display: none; }
 		
 		.httpCode, .statusCode {
+			/*font: 7.5pt 'Lucida Grande'; letter-spacing: -0.1em;*/
+			width: 31px;
+			position: absolute;
+			top: -1px; left: 5px;
 			font-weight: bold;
 			color: rgb(51, 51, 51);
 			text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px;
 			-webkit-border-radius: 6px;
 			-webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.20);
 			opacity: 0.35;
+			text-align: center;
 		}
-		.statusCode { margin: 0 6px 0 -3em; padding: 0 1em 0 1em; color: #3F3F3F; background: #A3A3A3; }
-		.httpCode { margin: 0 6px 0 -3em; padding: 0 5px; }
-		a:hover .httpCode, a:hover .statusCode { opacity: 1.0; }
+		.statusCode { margin: 0; padding: 0; color: #3F3F3F; background: #A3A3A3; }
+		.httpCode { margin: 0; padding: 0; }
+		li:hover .httpCode, li:hover .statusCode { opacity: 1.0; }
 		.httpCode.successful { color: #293A15; background: #68913F; }
-		a:hover .httpCode.successful { background: #76A149; }
+		li:hover .httpCode.successful { background: #76A149; }
 		.httpCode.redirect { color: #162C3A; background: #3A80A4; }
-		a:hover .httpCode.redirect { background: #4B99C9; }
+		li:hover .httpCode.redirect { background: #4B99C9; }
 		.httpCode.clientError { color: #35251C; background: #B87D59; }
-		a:hover .httpCode.clientError { background: #B87D59; }
+		li:hover .httpCode.clientError { background: #B87D59; }
 		.httpCode.serverError { color: #371C1D; background: #A33C42; }
-		a:hover .httpCode.serverError { background: #B23B3A; }
+		li:hover .httpCode.serverError { background: #B23B3A; }
 		
 		/*a:hover .httpCode { opacity: 1.0; }
 				.httpCode.successful, 
@@ -260,8 +267,8 @@
 		</div>
 		<div id="cacheInspector_body">
 			<div id="cacheInspector_metadata">
-				<div id="cacheInspector_status"><a id="cacheInspector_reloadButton" href="#" onclick="reloadCacheStatus(); return false;" title="Update cache status"><span class="statusCode">1</span><span class="label">Status:</span><span class="value">IDLE</span></a></div>
-				<div id="cacheInspector_manifestURL"><a id="" href="html5demo.manifest" title="Go to cache manifest"><span class="httpCode successful">200</span><span class="label">Manifest URL:</span><span class="value">/offline/cache.manifest</span></a></div>
+				<div id="cacheInspector_status"><a id="cacheInspector_updateCacheStatus_btn" href="#" onclick="reloadCacheStatus(); return false;" title="Update cache status"><span class="statusCode">1</span><span class="label">Status:</span><span class="value">IDLE</span></a></div>
+				<div id="cacheInspector_manifestURL"><a id="cacheInspector_updateCacheStatus_btn" href="html5demo.manifest" title="Go to cache manifest"><span class="httpCode successful">200</span><span class="label">Manifest URL:</span><span class="value">/offline/cache.manifest</span></a></div>
 				<div id="cacheInspector_manifestHeaders">
 					<span class="label">Manifest headers:</span>
 					<pre>Accept-Ranges:bytes
@@ -286,6 +293,7 @@ Vary:Accept-Encoding</pre>
 					<div id="cacheInspector_cachedList" class="open">
 						<h2 onclick="toggleManifestSection(this);"><span class="icon"></span>Cached:</h2>
 						<ul>
+							<li><a href="#" title="https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css"><span class="httpCode successful">&hellip;</span>https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css</a></li>
 							<li><a href="#" title="https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css"><span class="httpCode successful">200</span>https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css</a></li>
 							<li><a href="#" title="https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png"><span class="httpCode redirect">301</span>https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png</a></li>
 							<li><a href="#" title="https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif"><span class="httpCode clientError">404</span>https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif</a></li>
