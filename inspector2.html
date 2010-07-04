@@ -24,10 +24,13 @@
 			cacheInspector.addEventListener('mousedown', startDragCacheInspector, false);
 			cacheInspector_closeBtn.addEventListener('click', hideCacheInspector, false);
 			// cacheInspector_manifestRaw.addEventListener('mousedown', startDragCacheInspector, false);
-			//
+			
 			// hideCacheInspector();
+			
+			// showDetailedManifest();
+			showFormattedManifest();
 			// showRawManifest();
-			showDetailedManifest();
+			
 			// loadManifest('../mobile-me.manifest');
 			// loadManifest('../html5demo.manifest');
 		}
@@ -54,11 +57,19 @@
 		function showDetailedManifest () {
 			cacheInspector_manifest.className = 'detailed';
 			document.getElementById('cacheInspector_manifest_detailedBtn').className = 'active';
+			document.getElementById('cacheInspector_manifest_formattedBtn').className = '';
+			document.getElementById('cacheInspector_manifest_rawBtn').className = '';
+		}
+		function showFormattedManifest () {
+			cacheInspector_manifest.className = 'formatted';
+			document.getElementById('cacheInspector_manifest_detailedBtn').className = '';
+			document.getElementById('cacheInspector_manifest_formattedBtn').className = 'active';
 			document.getElementById('cacheInspector_manifest_rawBtn').className = '';
 		}
 		function showRawManifest () {
 			cacheInspector_manifest.className = 'raw';
 			document.getElementById('cacheInspector_manifest_detailedBtn').className = '';
+			document.getElementById('cacheInspector_manifest_formattedBtn').className = '';
 			document.getElementById('cacheInspector_manifest_rawBtn').className = 'active';
 		}
 		// function switchManifestView (style) {
@@ -120,13 +131,13 @@
 	</script>
 	<style type="text/css">
 		html { overflow: auto; }
-		body { margin: 0; padding: 0; /*background: url('mobileme.png') no-repeat scroll top left;*/ }
+		body { margin: 0; padding: 10px 20px; /*background: url('mobileme.png') no-repeat scroll top left;*/ }
 		
 		/* Cache Inspector */
 		#cacheInspector {
 			position: absolute;
-			top: 20px; left: 20px; z-index: 9000;
-			min-width: 250px; max-width: 600px;
+			top: 20px; left: 240px; z-index: 9000;
+			min-width: 250px; /*max-width: 600px;*/
 			/*margin: 0; padding: 4px 32px 8px;*/
 			margin: 0; padding: 0 0 16px;
 			/*background: rgba(0, 0, 0, 0.75) url(CacheDebugger.safariextension/hud-title-bg.png) repeat-x;*/
@@ -165,33 +176,40 @@
 		#cacheInspector_manifestHeaders .highlight { color: #FFFFFF; font-weight: bold; }
 		
 		/* Manifest content */
-		#cacheInspector_manifest { }
+		#cacheInspector_manifest { padding-right: 8px; }
 		#cacheInspector_manifest.detailed #cacheInspector_manifestDetailed { display: block; }
+		#cacheInspector_manifest.detailed #cacheInspector_manifestFormatted { display: none; }
 		#cacheInspector_manifest.detailed #cacheInspector_manifestRaw { display: none; }
+		#cacheInspector_manifest.formatted #cacheInspector_manifestDetailed { display: none; }
+		#cacheInspector_manifest.formatted #cacheInspector_manifestFormatted { display: block; }
+		#cacheInspector_manifest.formatted #cacheInspector_manifestRaw { display: none; }
 		#cacheInspector_manifest.raw #cacheInspector_manifestDetailed { display: none; }
+		#cacheInspector_manifest.raw #cacheInspector_manifestFormatted { display: none; }
 		#cacheInspector_manifest.raw #cacheInspector_manifestRaw { display: block; }
 		#cacheInspector_manifestRaw, 
+		#cacheInspector_manifestFormatted, 
 		#cacheInspector_manifestDetailed {
 			clear: left;
-			max-height: 400px;
-			max-width: 450px;
-			overflow-x: auto;
-			overflow-y: auto;
+			max-height: 350px; max-width: 400px;
+			overflow: auto;
 			margin-right: 8px;
 		}
-		#cacheInspector_manifestRaw { margin: 8px 8px 0 40px; padding: 4px 8px 8px 0; }
 		#cacheInspector_manifestDetailed { clear: left; margin: 8px 0 8px 0; }
 		#cacheInspector_manifestDetailed h2 { margin-left: 40px; font: bold 12px Helvetica, Arial, sans-serif; }
 		#cacheInspector_manifestDetailed ul { margin: 0; padding: 0; }
-		#cacheInspector_manifestDetailed li { margin: 0; padding: 4px 32px 4px 40px; list-style: none; position: relative; }
+		#cacheInspector_manifestDetailed li { font: 11px "Courier New"; margin: 0; padding: 4px 32px 4px 40px; list-style: none; position: relative; }
 		#cacheInspector_manifestDetailed .httpCode { top: 4px; }
 		#cacheInspector_manifestDetailed li:nth-child(even) { background: rgba(0, 0, 0, 0.20); }
 		
-		#cacheInspector .segmented { margin: -10px 0 0 40px; padding: 0; height: 20px; width: 120px; cursor: default; }
-		#cacheInspector .segmented li { background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#1D1D20)); border: 1px solid #999;
-		            padding: 2px 12px; margin: 0; list-style: none; display: block; float: left; }
+		#cacheInspector_manifestFormatted { margin: 8px 8px 8px 20px; }
+		
+		#cacheInspector_manifestRaw { margin: 8px 8px 0 40px; padding: 4px 8px 8px 0; }
+		
+		#cacheInspector .segmented { margin: -10px 0 0 40px; padding: 0; height: 20px;  }
+		#cacheInspector .segmented li { background: -webkit-gradient(linear, left top, left bottom, from(#383838), to(#1D1D20)); border-top: 1px solid #999; border-left: 1px solid #999; border-bottom: 1px solid #999;
+		            padding: 2px 12px; margin: 0; list-style: none; display: block; float: left; cursor: default; }
 		#cacheInspector .segmented li:first-child { -webkit-border-top-left-radius: 4px; -webkit-border-bottom-left-radius: 4px; }
-		#cacheInspector .segmented li:last-child { -webkit-border-top-right-radius: 4px; -webkit-border-bottom-right-radius: 4px;  border-left: none; }
+		#cacheInspector .segmented li:last-child { -webkit-border-top-right-radius: 4px; -webkit-border-bottom-right-radius: 4px; border-right: 1px solid #999; }
 		#cacheInspector .segmented .active { background: -webkit-gradient(linear, left top, left bottom, from(#575857), to(#3B3B41)); }
 		
 		h2 .icon { position: absolute; top: 3px; left: -12px; display: block; width: 16px; height: 16px; background: url(CacheDebugger.safariextension/hud-icons.png) no-repeat }
@@ -260,6 +278,24 @@
 	</style>
 </head>
 <body>
+	<h2>Cache Manifest tests:</h2>
+	<ul>
+		<li>applicationCache status</li>
+		<li>applicationCache events</li>
+		<li>Cache manifest URL</li>
+		<li>Cache manifest HTTP code</li>
+		<li>Cache manifest HTTP headers
+			<ul>
+				<li>Content-Type</li>
+				<li>Last-Modified</li>
+				<li>Cache-Control</li>
+				<li>Age?</li>
+				<li>Expires?</li>
+			</ul>
+		</li>
+		<li>Cache manifest content</li>
+		<li>Cache manifest format</li>
+	</ul>
 	<div id="cacheInspector">
 		<div id="cacheInspector_titlebar">
 			<p id="cacheInspector_closeBtn"><a onclick="hideCacheInspector();"><span>x</span></a></p>
@@ -271,23 +307,21 @@
 				<div id="cacheInspector_manifestURL"><a id="cacheInspector_updateCacheStatus_btn" href="html5demo.manifest" title="Go to cache manifest"><span class="httpCode successful">200</span><span class="label">Manifest URL:</span><span class="value">/offline/cache.manifest</span></a></div>
 				<div id="cacheInspector_manifestHeaders">
 					<span class="label">Manifest headers:</span>
-					<pre>Accept-Ranges:bytes
-<span class="highlight">Cache-Control:private</span>
-Connection:keep-alive
-Content-Encoding:gzip
-Content-Length:968
-<span class="highlight">Content-Type:text/cache-manifest</span>
-Cteonnt-Length:7714
-Date:Sat, 26 Jun 2010 19:32:16 GMT
-Etag:"b3278ab-1e22-4c1a71a0"
-<span class="highlight">Last-Modified:Thu, 17 Jun 2010 19:04:00 GMT</span>
-Server:Apache/1.3.33 (Darwin)
-Vary:Accept-Encoding</pre>
+					<pre>HTTP/1.1 200 OK
+<span class="highlight">Content-Type: text/cache-manifest</span>
+<span class="highlight">Cache-Control: private</span>
+Server: Apache/1.3.33 (Darwin)
+<span class="highlight">Last-Modified: Fri, 25 Jun 2010 23:20:58 GMT</span>
+ETag: "94661da-1e22-4c2539da"
+Cteonnt-Length: 7714
+Date: Sun, 04 Jul 2010 14:36:05 GMT
+Content-Length: 7714
+Connection: keep-alive</pre>
 				</div>
 			</div>
 			<div id="cacheInspector_manifest" class="detailed">
 				<ul class="segmented">
-					<li id="cacheInspector_manifest_detailedBtn"><a href="#parsed" onclick="showDetailedManifest(); return false;">Parsed</a></li><li id="cacheInspector_manifest_rawBtn"><a href="#raw" onclick="showRawManifest(); return false;">Raw</a></li>
+					<li id="cacheInspector_manifest_detailedBtn" onclick="showDetailedManifest();">Parsed</li><li id="cacheInspector_manifest_formattedBtn" onclick="showFormattedManifest();">Formatted</li><li id="cacheInspector_manifest_rawBtn" onclick="showRawManifest();">Raw</li>
 				</ul>
 				<div id="cacheInspector_manifestDetailed">
 					<div id="cacheInspector_cachedList" class="open">
@@ -319,26 +353,193 @@ Vary:Accept-Encoding</pre>
 						</ul>
 					</div>
 				</div>
-				<pre id="cacheInspector_manifestRaw">CACHE MANIFEST
-# rev 14
+				<div id="cacheInspector_manifestFormatted">
+					<p>CACHE MANIFEST
+# List of all resources required by this project
 
-CACHE:
-https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css
-https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png
-https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif
-https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png
+https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E52/stylesheet-packed.css
+https://static3.me.com/my/sproutcore/desktop/en/3b645/images/icons/shared.png
+https://static2.me.com/my/sproutcore/foundation/en/3b645/blank.gif
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/sprite.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/badges.png
+https://static1.me.com/my/shared/core/en/3b645/images/color_picker/color_picker_sprite.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ffffff.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_assets.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_controls.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_repeat_x.png
+https://static3.me.com/my/shared/core/en/3b645/images/blank.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_assets_mail.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_repeat_y.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/dialog_background.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_scrollbar_arrows.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_141414.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_f3f5f5.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_1f1f1f.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_fafafa.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_2f2f2f.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_464646.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_dfe1e3.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ebebeb.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_d6d6d7.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ffffff_50pct.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_sidebar_sel.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_message_window.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_white_linen.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_dark_linen.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_141414.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_f3f5f5.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_1f1f1f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_fafafa.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_2f2f2f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_30466a.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_464646.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_dfe1e3.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_d6d6d7.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_ffffff.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_ffffff_50pct.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_e9ddc5.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_141414.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_f3f5f5.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_1f1f1f.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_fafafa.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_2f2f2f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_464646.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_dfe1e3.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_d6d6d7.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_ffffff.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_ffffff_50pct.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_white_linen.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_dark_linen.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_2b3d5e.gif
+https://static2.me.com/my/core_mail/mail_theme/en/2E52/images/mail_assets.png
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/images/me_controls_mail.png
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/images/me_repeat_x_mail.png
+https://static1.me.com/my/core_mail/mail_theme/en/2E52/images/separator_e0e0e0.png
+https://static3.me.com/my/mail/en/2E52/stylesheet.css
+https://static3.me.com/my/core_mail/mail_bundles_wrapper/en/2E52/javascript-packed.js
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/apps/mail.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/apps/contacts.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/calendar.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/gallery.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/idisk.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/apps/fmip.png
+https://static3.me.com/my/shared/core/en/3b645/error_catch.js
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/selected.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/active.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/apps/dates/1.png
+https://static4.me.com/my/shared/core/en/3b645/images/app_switcher/apps/days/monday.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/middle.png
+https://static1.me.com/my/shared/core/en/3b645/images/progress/ind-bg-fill.png
+https://static1.me.com/my/mail/en/2E52/javascript.js
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/stylesheet-packed.css
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/stylesheet.css
+https://static2.me.com/my/core_mail/mail_theme/en/2E52/javascript-packed.js
+https://static4.me.com/my/core_mail/mail_theme/en/2E52/javascript.js
+
 
 NETWORK:
-https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css
-https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png
-https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif
-https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png
+http://www.me.com
+https://www.me.com
+https://static1.me.com
+https://static2.me.com
+https://static3.me.com
+https://static4.me.com
+https://webcourier.push.apple.com
+https://webcourier.sandbox.push.apple.com</p>
+				</div>
+				<pre id="cacheInspector_manifestRaw">CACHE MANIFEST
+# List of all resources required by this project
 
-OFFLINE:
-https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E47/stylesheet-packed.css
-https://static4.me.com/my/sproutcore/desktop/en/36105/images/icons/shared.png
-https://static3.me.com/my/sproutcore/foundation/en/36105/blank.gif
-https://static2.me.com/my/shared/core/en/3a035/images/app_switcher/sprite.png
+https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E52/stylesheet-packed.css
+https://static3.me.com/my/sproutcore/desktop/en/3b645/images/icons/shared.png
+https://static2.me.com/my/sproutcore/foundation/en/3b645/blank.gif
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/sprite.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/badges.png
+https://static1.me.com/my/shared/core/en/3b645/images/color_picker/color_picker_sprite.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ffffff.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_assets.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_controls.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_repeat_x.png
+https://static3.me.com/my/shared/core/en/3b645/images/blank.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_assets_mail.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_repeat_y.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/dialog_background.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_scrollbar_arrows.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_141414.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_f3f5f5.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_1f1f1f.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_fafafa.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_2f2f2f.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_464646.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_dfe1e3.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ebebeb.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_d6d6d7.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ffffff_50pct.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_sidebar_sel.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_message_window.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_white_linen.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_dark_linen.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_141414.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_f3f5f5.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_1f1f1f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_fafafa.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_2f2f2f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_30466a.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_464646.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_dfe1e3.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_d6d6d7.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_ffffff.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_ffffff_50pct.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_e9ddc5.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_141414.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_f3f5f5.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_1f1f1f.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_fafafa.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_2f2f2f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_464646.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_dfe1e3.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_d6d6d7.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_ffffff.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_ffffff_50pct.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_white_linen.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_dark_linen.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_2b3d5e.gif
+https://static2.me.com/my/core_mail/mail_theme/en/2E52/images/mail_assets.png
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/images/me_controls_mail.png
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/images/me_repeat_x_mail.png
+https://static1.me.com/my/core_mail/mail_theme/en/2E52/images/separator_e0e0e0.png
+https://static3.me.com/my/mail/en/2E52/stylesheet.css
+https://static3.me.com/my/core_mail/mail_bundles_wrapper/en/2E52/javascript-packed.js
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/apps/mail.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/apps/contacts.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/calendar.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/gallery.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/idisk.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/apps/fmip.png
+https://static3.me.com/my/shared/core/en/3b645/error_catch.js
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/selected.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/active.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/apps/dates/1.png
+https://static4.me.com/my/shared/core/en/3b645/images/app_switcher/apps/days/monday.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/middle.png
+https://static1.me.com/my/shared/core/en/3b645/images/progress/ind-bg-fill.png
+https://static1.me.com/my/mail/en/2E52/javascript.js
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/stylesheet-packed.css
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/stylesheet.css
+https://static2.me.com/my/core_mail/mail_theme/en/2E52/javascript-packed.js
+https://static4.me.com/my/core_mail/mail_theme/en/2E52/javascript.js
+
+
+NETWORK:
+http://www.me.com
+https://www.me.com
+https://static1.me.com
+https://static2.me.com
+https://static3.me.com
+https://static4.me.com
+https://webcourier.push.apple.com
+https://webcourier.sandbox.push.apple.com
+
 </pre>
 			</div>
 		</div>
