@@ -1,0 +1,8 @@
+Cache Manifest tests:
+
+- applicationCache status
+- applicationCache events
+- Cache manifest URL
+- Cache manifest headers
+- Cache manifest content
+- Cache manifest format
