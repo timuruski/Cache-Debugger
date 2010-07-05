@@ -4,24 +4,22 @@
 	<title>Cache Inspector</title>
 	<script type="text/javascript">
 		var cacheInspector, 
-			cacheInspector_body, 
 			cacheInspector_closeBtn, 
 			cacheInspector_status, 
 			cacheInspector_manifestURL, 
-			cacheInspector_manifestDetailed, 
-			cacheInspector_manifestRaw;
+			cacheInspector_manifestHeaders, 
+			cacheInspector_manifestContent;
 		
 		// Startup
 		function init (event) {
 			cacheInspector = document.getElementById('cacheInspector');
-			cacheInspector_body = document.getElementById('cacheInspector_body');
+			cacheInspector.addEventListener('mousedown', startDragCacheInspector, false);
 			cacheInspector_closeBtn = document.getElementById('cacheInspector_closeBtn');
+			cacheInspector_closeBtn.addEventListener('click', hideCacheInspector, false);
 			cacheInspector_status = document.getElementById('cacheInspector_status');
 			cacheInspector_manifestURL = document.getElementById('cacheInspector_manifestURL');
-			cacheInspector_manifestDetailed = document.getElementById('cacheInspector_manifestDetailed');
-			cacheInspector_manifestRaw = document.getElementById('cacheInspector_manifestRaw');
-			cacheInspector.addEventListener('mousedown', startDragCacheInspector, false);
-			cacheInspector_closeBtn.addEventListener('click', hideCacheInspector, false);
+			cacheInspector_manifestHeaders = document.getElementById('cacheInspector_manifestHeaders');
+			cacheInspector_manifestContent = document.getElementById('cacheInspector_manifestContent');
 			// cacheInspector_manifestRaw.addEventListener('mousedown', startDragCacheInspector, false);
 			
 			// hideCacheInspector();
@@ -34,22 +32,42 @@
 			
 			// loadManifest('../mobile-me.manifest');
 			// loadManifest('../html5demo.manifest');
+			
+			// cacheInspector_status.getElementsByClassName('value');
+			// cacheInspector_status.getElementsByClassName('statusCode');
 		}
 		
 		
 		// Manifest loading and parsing
-		function loadManifest (url) {
-			var r = new XMLHttpRequest();
-			r.addEventListener('readystatechange', onManifestLoaded);
-			r.open('GET', url);
-			r.send();
-			function onManifestLoaded (event) {
-				if(r.readyState === 4) displayManifestRaw(r.responseText);
+		function loadManifestContent (url) {
+			cacheInspector_manifestURL.getElementsByClassName('value')[0].innerText = url;
+			var request = new XMLHttpRequest();
+			var onManifestLoaded = function (event) {
+				// console.log(request);
+				if(request.readyState === 4) {
+					parseManifest(request);
+					setManifestHttpStatus(request.status);
+				}
 			}
+			request.addEventListener('readystatechange', onManifestLoaded);
+			request.open('GET', url);
+			request.send();
 		}
-		function displayManifestRaw (str) {
-			cacheInspector_manifestRaw.innerText = str;
-			showCacheInspector();
+		function parseManifest (request) {
+			cacheInspector_manifestHeaders.getElementsByTagName('pre')[0].innerText = request.getAllResponseHeaders();
+			cacheInspector_manifestContent.getElementsByTagName('pre')[0].innerText = request.responseText;
+			// showCacheInspector();
+		}
+		function setManifestHttpStatus (status) {
+			var badge = cacheInspector_manifestURL.getElementsByClassName('httpCode')[0];
+			var c = '';
+			if(status >= 200 && status < 300) c = 'successful';
+			if(status >= 300 && status < 400) c = 'redirect';
+			if(status >= 400 && status < 500) c = 'clientError';
+			if(status >= 500) c = 'serverError';
+			badge.innerText = status;
+			badge.className = 'httpCode ' + c;
+			// cacheInspector_manifestURL.getElementsByClassName('httpCode')[0].innerText = status;
 		}
 
 		
@@ -87,7 +105,7 @@
 		
 		// Drag functionality
 		function startDragCacheInspector (event) {
-			if(event.target === cacheInspector_manifestRaw || event.target === cacheInspector_manifestDetailed) return;
+			if(event.target === cacheInspector_manifestHeaders || event.target === cacheInspector_manifestContent) return;
 			// Initial click position
 			var startX = event.clientX, 
 				startY = event.clientY, 
@@ -402,9 +420,11 @@ https://webcourier.sandbox.push.apple.com</pre></div>
 			</div>
 		</div>
 	</div>
-	<ul style="display: none;">
-		<li><a href="mobile-me.manifest" onclick="loadManifest(this.href); return false;">Load Mobile Me manifest</a></li>
-		<li><a href="html5demo.manifest" onclick="loadManifest(this.href); return false;">Load HTML5 Demos manifest</a></li>
+	<ul>
+		<!-- <li><a href="mobile-me.manifest" onclick="loadManifestContent(this.href); return false;">Load Mobile Me manifest</a></li> -->
+		<li><a href="https://www.me.com/mail/app.manifest" onclick="loadManifestContent(this.href); return false;">Load Mobile Me manifest</a></li>
+		<li><a href="https://www.me.com/mail/app2.manifest" onclick="loadManifestContent(this.href); return false;">Load Mobile Me manifest 2</a></li>
+		<li><a href="html5demo.manifest" onclick="loadManifestContent(this.href); return false;">Load HTML5 Demos manifest</a></li>
 	</ul>
 </body>
 </html>
