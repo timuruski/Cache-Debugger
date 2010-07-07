@@ -1,0 +1,9 @@
+CACHE MANIFEST
+
+# version 16
+
+CACHE:
+images/shade.jpg
+images/bin.jpg
+/js/h5utils-offline.js
+/css/html5demos.css

@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>parser</title>
+	<script type="text/javascript">
+		var manifest;
+		window.addEventListener('load', onLoad, false);
+		function onLoad (event) {
+			var r = new XMLHttpRequest();
+			r.addEventListener('readystatechange', onReadyStateChange, false);
+			function onReadyStateChange (event) {
+				if(r.readyState === 4) {
+					manifest = parseManifest(r);
+					console.log(manifest.cacheList.length);
+					console.log(manifest.networkList.length);
+					console.log(manifest.fallbackList.length);
+				}
+			}
+			// r.open('GET', 'mobile-me.manifest');
+			r.open('GET', 'http://html5demos.com/html5demo.manifest');
+			r.send();
+		}
+		
+		const manifestHeader = 'CACHE MANIFEST', 
+		      cacheHeader = 'CACHE:', 
+		      networkHeader = 'NETWORK:', 
+		      fallbackHeader = 'FALLBACK:';
+		
+		// Roughly parse manifest into an object.
+		function parseManifest (manifestRequest) {
+			var lines = manifestRequest.responseText.split('\n'), 
+				line, 
+				manifest = { 
+					cacheList: [], 
+					networkList: [], 
+					fallbackList: []
+				},
+				list = manifest.cacheList;
+			for(var i = 0; i < lines.length; i++) {
+				line = lines[i].trim();
+				if( isEmpty(line) ) continue;
+				if( isComment(line) ) continue;
+				if( isManifestHeader(line) ) continue;
+				if( isCacheHeader(line) ) {
+					list = manifest.cacheList;
+					continue;
+				}
+				if( isNetworkHeader(line) ) {
+					list = manifest.networkList;
+					continue;
+				}
+				if( isFallbackHeader(line) ) {
+					list = manifest.fallbackList;
+					continue;
+				}
+				if( isUnknownHeader(line) ) {
+					list = null;
+					continue;
+				}
+				// Push regular lines into the respective list.
+				if(list) list.push(line);
+			}
+			
+			return manifest;
+		}
+		
+		// Line classifiers
+		function isEmpty (line) {
+			return line === '';
+		}
+		function isComment (line) {
+			return line.charAt(0) === '#';
+		}
+		function isManifestHeader (line) {
+			return line === manifestHeader;
+		}
+		function isCacheHeader (line) {
+			return line === cacheHeader;
+		}
+		function isNetworkHeader (line) {
+			return line === networkHeader;
+		}
+		function isFallbackHeader (line) {
+			return line === fallbackHeader;
+		}
+		function isUnknownHeader (line) {
+			return line.charAt(line.length - 1) === ':';
+		}
+		
+	</script>
+</head>
+<body>
+	<div id="container">
+		
+	</div>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Cache Inspector</title>
+	<script type="text/javascript">
+		var cacheInspector, 
+			cacheInspector_closeBtn, 
+			cacheInspector_status, 
+			cacheInspector_manifestURL, 
+			cacheInspector_manifestHeaders, 
+			cacheInspector_manifestContent;
+		
+		// Startup
+		function init (event) {
+			cacheInspector = document.getElementById('cacheInspector');
+			cacheInspector.addEventListener('mousedown', startDragCacheInspector, false);
+			cacheInspector_closeBtn = document.getElementById('cacheInspector_closeBtn');
+			cacheInspector_closeBtn.addEventListener('click', hideCacheInspector, false);
+			cacheInspector_status = document.getElementById('cacheInspector_status');
+			cacheInspector_manifestURL = document.getElementById('cacheInspector_manifestURL');
+			cacheInspector_manifestHeaders = document.getElementById('cacheInspector_manifestHeaders');
+			cacheInspector_manifestContent = document.getElementById('cacheInspector_manifestContent');
+			// cacheInspector_manifestRaw.addEventListener('mousedown', startDragCacheInspector, false);
+			
+			// hideCacheInspector();
+			
+			showManifestSection('cacheInspector_manifestHeaders');
+			hideManifestSection('cacheInspector_manifestContent');
+			// showDetailedManifest();
+			// showFormattedManifest();
+			// showRawManifest();
+			
+			// loadManifest('../mobile-me.manifest');
+			// loadManifest('../html5demo.manifest');
+			
+			// cacheInspector_status.getElementsByClassName('value');
+			// cacheInspector_status.getElementsByClassName('statusCode');
+		}
+		
+		
+		// Manifest loading and parsing
+		function loadManifestContent (url) {
+			cacheInspector_manifestURL.getElementsByClassName('value')[0].innerText = url;
+			var request = new XMLHttpRequest();
+			var onManifestLoaded = function (event) {
+				// console.log(request);
+				if(request.readyState === 4) {
+					parseManifest(request);
+					setManifestHttpStatus(request.status);
+				}
+			}
+			request.addEventListener('readystatechange', onManifestLoaded);
+			request.open('GET', url);
+			request.send();
+		}
+		function parseManifest (request) {
+			cacheInspector_manifestHeaders.getElementsByTagName('pre')[0].innerText = request.getAllResponseHeaders();
+			cacheInspector_manifestContent.getElementsByTagName('pre')[0].innerText = request.responseText;
+			// showCacheInspector();
+		}
+		function setManifestHttpStatus (status) {
+			var badge = cacheInspector_manifestURL.getElementsByClassName('httpCode')[0];
+			var c = '';
+			if(status >= 200 && status < 300) c = 'successful';
+			if(status >= 300 && status < 400) c = 'redirect';
+			if(status >= 400 && status < 500) c = 'clientError';
+			if(status >= 500) c = 'serverError';
+			badge.innerText = status;
+			badge.className = 'httpCode ' + c;
+			// cacheInspector_manifestURL.getElementsByClassName('httpCode')[0].innerText = status;
+		}
+
+		
+		// Disclosure sections
+		function toggleManifestSection (targetId) {
+			var e = document.getElementById(targetId);
+			e.className = (e.className === 'open') ? 'closed' : 'open';
+		}
+		function showManifestSection (targetId) {
+			var e = document.getElementById(targetId);
+			e.className = 'open';
+		}
+		function hideManifestSection (targetId) {
+			var e = document.getElementById(targetId);
+			e.className = 'closed';
+		}
+
+		
+		// Manifest inspector
+		function toggleCacheInspector () {
+			document.getElementById('cacheInspector') ? hideCacheInspector() : showCacheInspector();
+		}
+		function showCacheInspector () {
+			// var body = document.getElementsByTagName('body')[0];
+			// body.appendChild(cacheInspector);
+			// cacheInspector.style.display = 'block';
+			cacheInspector.style.opacity = 1;
+		}
+		function hideCacheInspector () {
+			// var body = document.getElementsByTagName('body')[0];
+			// body.removeChild(cacheInspector);
+			// cacheInspector.style.display = 'none';
+			cacheInspector.style.opacity = 0;
+		}
+		
+		// Drag functionality
+		function startDragCacheInspector (event) {
+			if(event.target === cacheInspector_manifestHeaders || event.target === cacheInspector_manifestContent) return;
+			// Initial click position
+			var startX = event.clientX, 
+				startY = event.clientY, 
+				originX = cacheInspector.offsetLeft, 
+				originY = cacheInspector.offsetTop;
+
+			event.stopPropagation();
+			event.preventDefault();
+			window.addEventListener('mousemove', onMouseMove, true);
+			window.addEventListener('mouseup', onMouseUp, true);
+
+			function onMouseMove (event) {
+				// Prevent inspector from being dragged off the screen.
+				if(event.clientX < 0 || event.clientY < 0) return;
+				var deltaX = startX - originX, 
+					deltaY = startY - originY, 
+					mouseX = event.clientX // + window.scrollX,
+					mouseY = event.clientY // + window.scrollY;
+				cacheInspector.style.left = (mouseX - deltaX) + 'px';
+				cacheInspector.style.top = (mouseY - deltaY) + 'px';
+			}
+			function onMouseUp (event) {
+				window.removeEventListener('mousemove', onMouseMove, true);
+				window.removeEventListener('mouseup', onMouseUp, true);
+			}
+		}
+		
+		// And go!
+		document.addEventListener('DOMContentLoaded', init);
+	</script>
+	<style type="text/css">
+		html { overflow: auto; }
+		body { margin: 0; padding: 10px 20px; /*background: url('mobileme.png') no-repeat scroll top left;*/ }
+		
+		/* Cache Inspector */
+		#cacheInspector {
+			position: absolute;
+			top: 20px; left: 260px; z-index: 9000;
+			min-width: 350px; /*max-width: 600px;*/
+			margin: 0; padding: 0 0 16px;
+			background: rgba(15, 15, 15, 0.85);
+			color: rgb(173, 173, 173);
+			font: 11px Helvetica, Arial, sans-serif;
+			-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.50);
+			-webkit-border-radius: 8px;
+			-webkit-transition: opacity 0.3s ease-out;
+		}
+		#cacheInspector a { color: rgb(173, 173, 173); text-decoration: none; }
+		#cacheInspector a:hover { color: rgb(255, 255, 255); }
+		
+		/* Inspector titlebar */
+		#cacheInspector_titlebar { height: 20px; background: -webkit-gradient(linear, left top, left bottom, from(rgba(106,107,106, 0.85)), to(rgba(76,75,83,0.85))); -webkit-border-top-left-radius: 8px; -webkit-border-top-right-radius: 8px; border-bottom: 1px groove rgba(255, 255, 255, 0.2); cursor: default; }
+		/*#cacheInspector_titlebar { height: 20px; background: rgba(146,146,146, 0.85); -webkit-border-top-left-radius: 8px; -webkit-border-top-right-radius: 8px; border-bottom: 1px groove rgba(255, 255, 255, 0.2); cursor: default; }*/
+		/*#cacheInspector_titlebar { height: 20px; background: rgba(146,146,146, 0.85); -webkit-border-top-left-radius: 8px; -webkit-border-top-right-radius: 8px; border-bottom: 1px groove rgba(255, 255, 255, 0.2); cursor: default; }*/
+		#cacheInspector_title { color: rgb(232, 232, 232); font: 11px Helvetica, Arial, sans-serif; margin: 0; padding-top: 4px; text-align: center; text-shadow: rgba(0, 0, 0, 0.746094) 0px 1px 0px; }
+		#cacheInspector_closeBtn { display: block; position: absolute; left: 3px; top: 3px; width: 13px; height: 13px; background: url(CacheDebugger.safariextension/hud-icons.png) no-repeat -32px -16px; margin: 0; padding: 0; }
+		#cacheInspector_closeBtn:hover { background-position: -32px 0; }
+		#cacheInspector_closeBtn span { display: none; }
+		
+		/* Manifest metadata */
+		#cacheInspector_body { margin: 0; padding: 0; }
+		#cacheInspector_body h2 { margin-left: 20px; font: bold 12px Helvetica, Arial, sans-serif; position: relative; }
+		#cacheInspector_manifestMetadata p { margin: 0 0 4px 0; position: relative; }
+		#cacheInspector_body .label { font-weight: bold; margin-right: 4px; }
+		#cacheInspector_status { padding: 0 8px 0 40px; position: relative;}
+		#cacheInspector_manifestURL { padding: 0 8px 0 40px; position: relative; }
+		#cacheInspector_manifestMetadata { border-bottom: 1px solid #222222; } 
+		#cacheInspector_manifestHeaders { border-top: 1px solid #474747; } 
+		#cacheInspector_manifestHeaders, 
+		#cacheInspector_manifestContent { border-bottom: 1px solid #474747; }
+		
+		#cacheInspector_manifestMetadata { margin: 0; padding: 12px 0 8px; }
+		
+		.closed #cacheInspector_manifestHeaders .wrapper, 
+		.closed #cacheInspector_manifestContent .wrapper { padding: 0; }
+		.open #cacheInspector_manifestHeaders .wrapper, 
+		.open #cacheInspector_manifestContent .wrapper { padding: 4px 2px 4px 4px; }
+		
+		/*#cacheInspector_manifestHeaders.closed pre, 
+		#cacheInspector_manifestContent.closed pre { max-height: auto; max-width: auto; overflow: none; }*/
+		/*#cacheInspector_manifestHeaders.open pre, 
+		#cacheInspector_manifestContent.open pre { max-height: 300px; max-width: 400px; overflow: auto; }*/
+		
+		#cacheInspector_manifestHeaders .wrapper, 
+		#cacheInspector_manifestContent .wrapper { 
+			margin: 0; /*padding: 2px 2px 2px 0;*/
+			border-top: 1px solid rgba(0, 0, 0, 0.15); /*border-bottom: 1px solid rgba(255, 255, 255, 0.10);*/
+			background: rgba(0, 0, 0, 0.20); color: #9A9A9A;
+		}
+		#cacheInspector_manifestHeaders pre, 
+		#cacheInspector_manifestContent pre { 
+			margin: 0 4px 0 0; padding: 4px 8px; /*padding: 12px 20px 12px 20px; */
+			max-height: 300px; max-width: 450px; overflow: auto;
+			/*font: 11px monospace;*/ line-height: 14px;}
+		#cacheInspector_manifestHeaders .highlight { color: #E0E0E0; font-weight: bold; }
+		#cacheInspector_manifestHeaders .problem { color: #FF6E66; font-weight: bold; }
+		
+		/*#cacheInspector_manifestContent { margin: 8px 8px 0 40px; padding: 4px 8px 8px 0; }*/
+		/*#cacheInspector_manifestContent pre { */
+		
+		/* Manifest content */
+		#cacheInspector_body h2 .icon { position: absolute; top: 3px; left: -12px; display: block; width: 16px; height: 16px; background: url(CacheDebugger.safariextension/hud-icons.png) no-repeat }
+			/*.open h2, .closed h2 { position: relative; }*/
+		#cacheInspector_body .open h2 .icon { background-position: 0 0; }
+		#cacheInspector_body .closed h2 .icon { background-position: -16px 0; }
+		#cacheInspector_body .open pre { display: block; }
+		#cacheInspector_body .closed pre { display: none; }
+		
+		.httpCode, .statusCode {
+			/*font: 7.5pt 'Lucida Grande'; letter-spacing: -0.1em;*/
+			width: 31px;
+			position: absolute;
+			top: -1px; left: 5px;
+			font-weight: bold;
+			color: rgb(51, 51, 51);
+			text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px;
+			-webkit-border-radius: 6px;
+			-webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.20);
+			/*opacity: 0.35;*/
+			text-align: center;
+			margin: 0; padding: 0;
+		}
+		
+		.statusCode { color: #3F3F3F; background: #5a5a5a; text-shadow: rgba(255, 255, 255, 0.1) 0px 1px 0px; }
+		*:hover > .statusCode {  color: #474747;background: #A3A3A3; text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px; }
+		.statusCode.checking, .statusCode.downloading { color: #162C3A; background: #3A80A4; }
+		*:hover > .statusCode.checking, *:hover > .statusCode.downloading { background: #4B99C9; }
+		.statusCode.updateready { color: #293A15; background: #68913F; }
+		*:hover > .statusCode.updateready { background: #89BA54; }
+		
+		.httpCode { margin: 0; padding: 0; color: #3F3F3F; background: #A3A3A3; }
+		*:hover > .httpCode, 
+		.httpCode.successful { color: #293A15; background: #68913F; }
+		*:hover > .httpCode.successful { background: #89BA54; }
+		.httpCode.redirect { color: #162C3A; background: #3A80A4; }
+		*:hover > .httpCode.redirect { background: #4B99C9; }
+		.httpCode.clientError { color: #35251C; background: #B87D59; }
+		*:hover > .httpCode.clientError { background: #D98041; }
+		.httpCode.serverError { color: #371C1D; background: #A33C42; }
+		*:hover > .httpCode.serverError { background: #BF2C2C; }
+		
+		/*a:hover .httpCode { opacity: 1.0; }
+				.httpCode.successful, 
+				.httpCode.redirect { color: #3F3F3F; background: #7F7F7F; }
+				.httpCode.clientError, 
+				.httpCode.serverError { color: #371C1D; background: #A33C42; }
+				a:hover .httpCode.successful { color: #293A15; background: #68913F; }
+				a:hover .httpCode.redirect { color: #162C3A; background: #3A80A4; }
+				a:hover .httpCode.clientError { color: #371C1D; background: #A33C42; }
+				a:hover .httpCode.serverError { color: #371C1D; background: #A33C42; }*/
+		
+		/* @group Custom Scrollbars */
+		/* Scrollbar graphics from: http://www.brandonwalkin.com/bwtoolkit/ */
+		#cacheInspector ::-webkit-scrollbar { width: 11px; height: 11px; margin: 8px; }
+		/* Turn on single button up on top, and down on bottom */
+		#cacheInspector ::-webkit-scrollbar-button:start:decrement,
+		#cacheInspector ::-webkit-scrollbar-button:end:increment { display: none; }
+		/* Turn off the down area up on top, and up area on bottom */
+		#cacheInspector ::-webkit-scrollbar-button:start:increment,
+		#cacheInspector ::-webkit-scrollbar-button:end:decrement { display: none; }
+		#cacheInspector ::-webkit-scrollbar-track { -webkit-border-image: url(scrollbar-track.png) 5 / 5px stretch; margin: 8px; }
+		/* Top area above thumb and below up button */
+		#cacheInspector ::-webkit-scrollbar-track-piece:start { border: none; }
+		/* Bottom area below thumb and down button */
+		#cacheInspector ::-webkit-scrollbar-track-piece:end { border: none; }
+		/* Track below and above */
+		#cacheInspector ::-webkit-scrollbar-track-piece { background-color: transparent; }
+		/* The thumb itself */
+		#cacheInspector ::-webkit-scrollbar-thumb { -webkit-border-image: url(scrollbar.png) 5 / 5px stretch; }
+		/* Corner */
+		#cacheInspector ::-webkit-scrollbar-corner { background-color: transparent; }
+		/* @end */
+	</style>
+</head>
+<body>
+	<h2>Cache Manifest tests:</h2>
+	<ul>
+		<li>applicationCache status</li>
+		<li>applicationCache events</li>
+		<li>Cache manifest URL</li>
+		<li>Cache manifest HTTP code</li>
+		<li>Cache manifest HTTP headers
+			<ul>
+				<li>Content-Type</li>
+				<li>Last-Modified</li>
+				<li>Cache-Control</li>
+				<li>Age?</li>
+				<li>Expires?</li>
+			</ul>
+		</li>
+		<li>Cache manifest content</li>
+		<li>Cache manifest format</li>
+	</ul>
+	<div id="cacheInspector">
+		<div id="cacheInspector_titlebar">
+			<p id="cacheInspector_closeBtn"><a onclick="hideCacheInspector();"><span>x</span></a></p>
+			<p id="cacheInspector_title">Cache Inspector</p>
+		</div>
+		<div id="cacheInspector_body">
+			<div id="cacheInspector_manifestMetadata">
+				<p id="cacheInspector_status"><a id="cacheInspector_updateCacheStatus_btn" href="#" onclick="reloadCacheStatus(); return false;" title="Update cache status"><span class="statusCode">1</span><span class="label">Status:</span><span class="value">IDLE</span></a></p>
+				<p id="cacheInspector_manifestURL"><a id="cacheInspector_updateCacheStatus_btn" href="html5demo.manifest" title="Go to cache manifest"><span class="httpCode successful">200</span><span class="label">Manifest URL:</span><span class="value">/offline/cache.manifest</span></a></p>
+			</div>
+			<div id="cacheInspector_manifestHeaders">
+				<h2 onclick="toggleManifestSection('cacheInspector_manifestHeaders');"><span class="icon"></span>Headers</h2>
+				<div class="wrapper"><pre>HTTP/1.1 200 OK
+<span class="highlight">Content-Type: text/cache-manifest</span>
+<span class="highlight problem">Content-Type: text/plain</span>
+<span class="highlight">Cache-Control: private</span>
+Server: Apache/1.3.33 (Darwin)
+<span class="highlight">Last-Modified: Fri, 25 Jun 2010 23:20:58 GMT</span>
+ETag: "94661da-1e22-4c2539da"
+Cteonnt-Length: 7714
+Date: Sun, 04 Jul 2010 14:36:05 GMT
+Content-Length: 7714
+Connection: keep-alive</pre></div>
+			</div>
+			<div id="cacheInspector_manifestContent">
+				<h2 onclick="toggleManifestSection('cacheInspector_manifestContent');"><span class="icon"></span>Content</h2>
+				<div class="wrapper"><pre>CACHE MANIFEST
+# List of all resources required by this project
+
+https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E52/stylesheet-packed.css
+https://static3.me.com/my/sproutcore/desktop/en/3b645/images/icons/shared.png
+https://static2.me.com/my/sproutcore/foundation/en/3b645/blank.gif
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/sprite.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/badges.png
+https://static1.me.com/my/shared/core/en/3b645/images/color_picker/color_picker_sprite.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ffffff.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_assets.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_controls.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_repeat_x.png
+https://static3.me.com/my/shared/core/en/3b645/images/blank.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_assets_mail.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_repeat_y.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/dialog_background.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_scrollbar_arrows.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_141414.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_f3f5f5.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_1f1f1f.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_fafafa.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_2f2f2f.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_464646.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_dfe1e3.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ebebeb.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_d6d6d7.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ffffff_50pct.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_sidebar_sel.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_message_window.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_white_linen.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_dark_linen.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_141414.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_f3f5f5.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_1f1f1f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_fafafa.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_2f2f2f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_30466a.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_464646.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_dfe1e3.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_d6d6d7.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_ffffff.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_ffffff_50pct.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_e9ddc5.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_141414.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_f3f5f5.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_1f1f1f.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_fafafa.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_2f2f2f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_464646.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_dfe1e3.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_d6d6d7.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_ffffff.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_ffffff_50pct.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_white_linen.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_dark_linen.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_2b3d5e.gif
+https://static2.me.com/my/core_mail/mail_theme/en/2E52/images/mail_assets.png
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/images/me_controls_mail.png
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/images/me_repeat_x_mail.png
+https://static1.me.com/my/core_mail/mail_theme/en/2E52/images/separator_e0e0e0.png
+https://static3.me.com/my/mail/en/2E52/stylesheet.css
+https://static3.me.com/my/core_mail/mail_bundles_wrapper/en/2E52/javascript-packed.js
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/apps/mail.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/apps/contacts.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/calendar.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/gallery.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/idisk.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/apps/fmip.png
+https://static3.me.com/my/shared/core/en/3b645/error_catch.js
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/selected.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/active.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/apps/dates/1.png
+https://static4.me.com/my/shared/core/en/3b645/images/app_switcher/apps/days/monday.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/middle.png
+https://static1.me.com/my/shared/core/en/3b645/images/progress/ind-bg-fill.png
+https://static1.me.com/my/mail/en/2E52/javascript.js
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/stylesheet-packed.css
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/stylesheet.css
+https://static2.me.com/my/core_mail/mail_theme/en/2E52/javascript-packed.js
+https://static4.me.com/my/core_mail/mail_theme/en/2E52/javascript.js
+
+
+NETWORK:
+http://www.me.com
+https://www.me.com
+https://static1.me.com
+https://static2.me.com
+https://static3.me.com
+https://static4.me.com
+https://webcourier.push.apple.com
+https://webcourier.sandbox.push.apple.com</pre></div>
+			</div>
+		</div>
+	</div>
+	<ul>
+		<!-- <li><a href="mobile-me.manifest" onclick="loadManifestContent(this.href); return false;">Load Mobile Me manifest</a></li> -->
+		<li><a href="https://www.me.com/mail/app.manifest" onclick="loadManifestContent(this.href); return false;">Load Mobile Me manifest</a></li>
+		<li><a href="https://www.me.com/mail/app2.manifest" onclick="loadManifestContent(this.href); return false;">Load Mobile Me manifest 2</a></li>
+		<li><a href="html5demo.manifest" onclick="loadManifestContent(this.href); return false;">Load HTML5 Demos manifest</a></li>
+	</ul>
+</body>
+</html>
