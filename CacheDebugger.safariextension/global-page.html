@@ -2,6 +2,20 @@
 <html>
 <head>
 	<script type="text/javascript">
+		var inspectorTemplate;
+		function loadInspectorTemplate () {
+			console.log(safari.extension.baseURI + 'inspector.html');
+			var request = new XMLHttpRequest(), 
+				onReadyStateChange = function (event) {
+				if(request.readyState === 4) {
+					inspectorTemplate = request.responseText;
+				}
+			}
+			request.onreadystatechange = onReadyStateChange;
+			request.open('GET', safari.extension.baseURI + 'inspector.html');
+			request.send();
+		}
+		
 		// Startup
 		function startup () {
 			// Events
@@ -16,7 +30,7 @@
 				toolbarItem.disabled = true;
 				toolbarItem.browserWindow.activeTab.page
 				pageProxy = toolbarItem.browserWindow.activeTab.page;
-				pageProxy.dispatchMessage('updateToolbarItem');
+				if(pageProxy) pageProxy.dispatchMessage('updateToolbarItem');
 			}
 		}
 		
@@ -45,6 +59,10 @@
 			switch(event.name) {
 				case 'updateToolbarItem':
 					updateToolbarItem(event);
+					break;
+				case 'loadInspectorTemplate':
+					var pageProxy = event.target.browserWindow.activeTab.page;
+					if(pageProxy) pageProxy.dispatchMessage('loadInspectorTemplate', inspectorTemplate);
 					break;
 			}
 		}
@@ -85,6 +103,7 @@
 		}
 		
 		// Let's go!
+		loadInspectorTemplate();
 		startup();
 	</script>
 </head>
