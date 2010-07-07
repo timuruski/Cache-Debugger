@@ -1,86 +1,143 @@
-/* Basic HUD inspector style */
-html { overflow: auto; }
-#manifestInspector {
-	display: relative;
+/* RESET */
+/* http://meyerweb.com/eric/tools/css/reset/ */
+/* v1.0 | 20080212 */
+
+
+/* Cache Inspector */
+#cacheInspector {
 	position: absolute;
-	top: 20px; left: 20px; z-index: 9000;
-	min-width: 250px; max-width: 600px;
-	margin: 0; padding: 4px 4px 4px 16px;
-	background: rgba(0, 0, 0, 0.75) url(hud-title-bg.png) repeat-x;
-	color: rgb(255, 255, 255);
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	top: 20px; left: 260px; z-index: 9000;
+	min-width: 350px; /*max-width: 600px;*/
+	margin: 0; padding: 0 0 16px;
+	background: rgba(15, 15, 15, 0.85);
+	color: rgb(173, 173, 173);
+	font: 11px Helvetica, Arial, sans-serif;
 	-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.50);
 	-webkit-border-radius: 8px;
+	-webkit-transition: opacity 0.3s ease-out;
 }
-#manifestInspector_closeBtn {
-	display: block;
+#cacheInspector a { color: rgb(173, 173, 173); text-decoration: none; }
+#cacheInspector a:hover { color: rgb(255, 255, 255); }
+
+/* Inspector titlebar */
+#cacheInspector_titlebar { height: 20px; background: -webkit-gradient(linear, left top, left bottom, from(rgba(106,107,106, 0.85)), to(rgba(76,75,83,0.85))); -webkit-border-top-left-radius: 8px; -webkit-border-top-right-radius: 8px; border-bottom: 1px groove rgba(255, 255, 255, 0.2); cursor: default; }
+/*#cacheInspector_titlebar { height: 20px; background: rgba(146,146,146, 0.85); -webkit-border-top-left-radius: 8px; -webkit-border-top-right-radius: 8px; border-bottom: 1px groove rgba(255, 255, 255, 0.2); cursor: default; }*/
+/*#cacheInspector_titlebar { height: 20px; background: rgba(146,146,146, 0.85); -webkit-border-top-left-radius: 8px; -webkit-border-top-right-radius: 8px; border-bottom: 1px groove rgba(255, 255, 255, 0.2); cursor: default; }*/
+#cacheInspector_title { color: rgb(232, 232, 232); font: 11px Helvetica, Arial, sans-serif; margin: 0; padding-top: 4px; text-align: center; text-shadow: rgba(0, 0, 0, 0.746094) 0px 1px 0px; }
+#cacheInspector_closeBtn { display: block; position: absolute; left: 3px; top: 3px; width: 13px; height: 13px; background: url(hud-icons.png) no-repeat -32px -16px; margin: 0; padding: 0; }
+#cacheInspector_closeBtn:hover { background-position: -32px 0; }
+#cacheInspector_closeBtn span { display: none; }
+
+/* Manifest metadata */
+#cacheInspector_body { margin: 0; padding: 0; text-align: left; }
+#cacheInspector_body h2 { text-align: left; margin-left: 20px; font: bold 12px Helvetica, Arial, sans-serif; position: relative; }
+#cacheInspector_manifestMetadata p { margin: 0 0 4px 0; position: relative; }
+#cacheInspector_body .label { font-weight: bold; margin-right: 4px; }
+#cacheInspector_status { padding: 0 8px 0 40px; position: relative;}
+#cacheInspector_manifestURL { padding: 0 8px 0 40px; position: relative; }
+#cacheInspector_manifestMetadata { border-bottom: 1px solid #222222; } 
+#cacheInspector_manifestHeaders { border-top: 1px solid #474747; } 
+#cacheInspector_manifestHeaders, 
+#cacheInspector_manifestContent { border-bottom: 1px solid #474747; }
+
+#cacheInspector_manifestMetadata { margin: 0; padding: 12px 0 8px; }
+
+.closed #cacheInspector_manifestHeaders .wrapper, 
+.closed #cacheInspector_manifestContent .wrapper { padding: 0; }
+.open #cacheInspector_manifestHeaders .wrapper, 
+.open #cacheInspector_manifestContent .wrapper { padding: 4px 2px 4px 4px; }
+
+/*#cacheInspector_manifestHeaders.closed pre, 
+#cacheInspector_manifestContent.closed pre { max-height: auto; max-width: auto; overflow: none; }*/
+/*#cacheInspector_manifestHeaders.open pre, 
+#cacheInspector_manifestContent.open pre { max-height: 300px; max-width: 400px; overflow: auto; }*/
+
+#cacheInspector_manifestHeaders .wrapper, 
+#cacheInspector_manifestContent .wrapper { 
+	margin: 0; /*padding: 2px 2px 2px 0;*/
+	border-top: 1px solid rgba(0, 0, 0, 0.15); /*border-bottom: 1px solid rgba(255, 255, 255, 0.10);*/
+	background: rgba(0, 0, 0, 0.20); color: #9A9A9A;
+}
+#cacheInspector_manifestHeaders pre, 
+#cacheInspector_manifestContent pre { 
+	margin: 0 4px 0 0; padding: 4px 8px; /*padding: 12px 20px 12px 20px; */
+	max-height: 300px; max-width: 450px; overflow: auto;
+	/*font: 11px monospace;*/ line-height: 14px;}
+#cacheInspector_manifestHeaders .highlight { color: #E0E0E0; font-weight: bold; }
+#cacheInspector_manifestHeaders .problem { color: #FF6E66; font-weight: bold; }
+
+/*#cacheInspector_manifestContent { margin: 8px 8px 0 40px; padding: 4px 8px 8px 0; }*/
+/*#cacheInspector_manifestContent pre { */
+
+/* Manifest content */
+#cacheInspector_body h2 .icon { position: absolute; top: 3px; left: -12px; display: block; width: 16px; height: 16px; background: url(hud-icons.png) no-repeat }
+	/*.open h2, .closed h2 { position: relative; }*/
+#cacheInspector_body .open h2 .icon { background-position: 0 0; }
+#cacheInspector_body .closed h2 .icon { background-position: -16px 0; }
+#cacheInspector_body .open pre { display: block; }
+#cacheInspector_body .closed pre { display: none; }
+
+.httpCode, .statusCode {
+	/*font: 7.5pt 'Lucida Grande'; letter-spacing: -0.1em;*/
+	width: 31px;
 	position: absolute;
-	left: 3px; top: 3px;
-	width: 13px; height: 13px;
-	background: url(hud-icons.png) no-repeat -32px -16px;
+	top: -1px; left: 5px;
+	font-weight: bold;
+	color: rgb(51, 51, 51);
+	text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px;
+	-webkit-border-radius: 6px;
+	-webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.20);
+	/*opacity: 0.35;*/
+	text-align: center;
 	margin: 0; padding: 0;
 }
-#manifestInspector_closeBtn:hover { background-position: -32px 0; }
-#manifestInspector_closeBtn span { display: none; }
-#manifestInspector_title {
-	margin: 0;
-	text-align: center;
-	text-shadow: rgba(0, 0, 0, 0.746094) 0px 1px 0px;
-}
-#manifestInspector_body {
-    max-height: 500px;
-    overflow: auto;
-}
 
-/* Custom scrollbars, 
-   using the lovely scrollbars from http://orderedlist.com */
-#manifestInspector ::-webkit-scrollbar {
-    width: 15px;
-    height: 15px;
-}
+.statusCode { color: #3F3F3F; background: #5a5a5a; text-shadow: rgba(255, 255, 255, 0.1) 0px 1px 0px; }
+*:hover > .statusCode {  color: #474747;background: #A3A3A3; text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px; }
+.statusCode.checking, .statusCode.downloading { color: #162C3A; background: #3A80A4; }
+*:hover > .statusCode.checking, *:hover > .statusCode.downloading { background: #4B99C9; }
+.statusCode.updateready { color: #293A15; background: #68913F; }
+*:hover > .statusCode.updateready { background: #89BA54; }
 
+.httpCode { margin: 0; padding: 0; color: #3F3F3F; background: #A3A3A3; }
+*:hover > .httpCode, 
+.httpCode.successful { color: #293A15; background: #68913F; }
+*:hover > .httpCode.successful { background: #89BA54; }
+.httpCode.redirect { color: #162C3A; background: #3A80A4; }
+*:hover > .httpCode.redirect { background: #4B99C9; }
+.httpCode.clientError { color: #35251C; background: #B87D59; }
+*:hover > .httpCode.clientError { background: #D98041; }
+.httpCode.serverError { color: #371C1D; background: #A33C42; }
+*:hover > .httpCode.serverError { background: #BF2C2C; }
+
+/*a:hover .httpCode { opacity: 1.0; }
+		.httpCode.successful, 
+		.httpCode.redirect { color: #3F3F3F; background: #7F7F7F; }
+		.httpCode.clientError, 
+		.httpCode.serverError { color: #371C1D; background: #A33C42; }
+		a:hover .httpCode.successful { color: #293A15; background: #68913F; }
+		a:hover .httpCode.redirect { color: #162C3A; background: #3A80A4; }
+		a:hover .httpCode.clientError { color: #371C1D; background: #A33C42; }
+		a:hover .httpCode.serverError { color: #371C1D; background: #A33C42; }*/
+
+/* @group Custom Scrollbars */
+/* Scrollbar graphics from: http://www.brandonwalkin.com/bwtoolkit/ */
+#cacheInspector ::-webkit-scrollbar { width: 11px; height: 11px; margin: 8px; }
 /* Turn on single button up on top, and down on bottom */
-#manifestInspector ::-webkit-scrollbar-button:start:decrement,
-#manifestInspector ::-webkit-scrollbar-button:end:increment {
-    display: none;
-}
-
+#cacheInspector ::-webkit-scrollbar-button:start:decrement,
+#cacheInspector ::-webkit-scrollbar-button:end:increment { display: none; }
 /* Turn off the down area up on top, and up area on bottom */
-#manifestInspector ::-webkit-scrollbar-button:start:increment,
-#manifestInspector ::-webkit-scrollbar-button:end:decrement {
-    display: none;
-}
-
-#manifestInspector ::-webkit-scrollbar-track {
-    -webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
-    border-width:7px;
-}
-
+#cacheInspector ::-webkit-scrollbar-button:start:increment,
+#cacheInspector ::-webkit-scrollbar-button:end:decrement { display: none; }
+#cacheInspector ::-webkit-scrollbar-track { -webkit-border-image: url(scrollbar-track.png) 5 / 5px stretch; margin: 8px; }
 /* Top area above thumb and below up button */
-#manifestInspector ::-webkit-scrollbar-track-piece:start {
-    border: none;
-}
-
+#cacheInspector ::-webkit-scrollbar-track-piece:start { border: none; }
 /* Bottom area below thumb and down button */
-#manifestInspector ::-webkit-scrollbar-track-piece:end {
-    border: none;
-}
-
+#cacheInspector ::-webkit-scrollbar-track-piece:end { border: none; }
 /* Track below and above */
-#manifestInspector ::-webkit-scrollbar-track-piece {
-    background-color: transparent;
-}
-
+#cacheInspector ::-webkit-scrollbar-track-piece { background-color: transparent; }
 /* The thumb itself */
-#manifestInspector ::-webkit-scrollbar-thumb {
-    -webkit-border-image: url(scrollbar.png) 7 7 7 7 / 7px 7px 7px 7px stretch repeat;
-    border-width:7px;
-    -webkit-transition:0.2s linear;
-}
-
+#cacheInspector ::-webkit-scrollbar-thumb { -webkit-border-image: url(scrollbar.png) 5 / 5px stretch; }
 /* Corner */
-#manifestInspector ::-webkit-scrollbar-corner {
-    background-color: transparent;
-}
-
+#cacheInspector ::-webkit-scrollbar-corner { background-color: transparent; }
+/* @end */

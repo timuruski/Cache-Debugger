@@ -14,6 +14,9 @@ function handleMessage (event) {
         case 'toggleManifestInspector':
             toggleManifestInspector();
             break;
+        case 'loadInspectorTemplate':
+            onLoadInspectorTemplate(event.message);
+            break;
     }
 }
 
@@ -98,6 +101,18 @@ applicationCache.addEventListener('updateready', onUpdateReady, false);
 
 // Display the manifest inspector
 // ==============================
+var inspectorTemplate;
+function loadInspectorTemplate () {
+	safari.self.tab.dispatchMessage('loadInspectorTemplate');
+}
+function onLoadInspectorTemplate (message) {
+    // console.log(message);
+    var inspector = document.createElement('div');
+    inspector.innerHTML = message;
+    document.body.appendChild(inspector.children[0]);
+}
+loadInspectorTemplate();
+
 var manifestInspector, manifestInspector_body, manifestInspector_closeBtn;
 function showManifestInspector () {
     // Download manifest inspector
