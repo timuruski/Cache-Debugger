@@ -38,7 +38,7 @@
 		function onCommand (event) {
 			var pageProxy = safari.application.activeBrowserWindow.activeTab.page;
 			if (event.command === 'Cache Inspector') {
-				pageProxy.dispatchMessage('toggleManifestInspector');
+				pageProxy.dispatchMessage('toggleCacheInspector');
 			}
 		}
 		// Toolbar item disable loop
@@ -60,9 +60,9 @@
 				case 'updateToolbarItem':
 					updateToolbarItem(event);
 					break;
-				case 'loadInspectorTemplate':
+				case 'fetchInspectorTemplate':
 					var pageProxy = event.target.browserWindow.activeTab.page;
-					if(pageProxy) pageProxy.dispatchMessage('loadInspectorTemplate', inspectorTemplate);
+					if(pageProxy) pageProxy.dispatchMessage('fetchInspectorTemplate', inspectorTemplate);
 					break;
 			}
 		}

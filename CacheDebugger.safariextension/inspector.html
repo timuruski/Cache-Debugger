@@ -1,4 +1,4 @@
-<div id="cacheInspector">
+<div id="cacheInspector" onmousedown="startDragCacheInspector()" style="display: none;">
 	<div id="cacheInspector_titlebar">
 		<p id="cacheInspector_closeBtn"><a onclick="hideCacheInspector();"><span>x</span></a></p>
 		<p id="cacheInspector_title">Cache Inspector</p>
@@ -9,7 +9,7 @@
 			<p id="cacheInspector_manifestURL"><a id="cacheInspector_updateCacheStatus_btn" href="html5demo.manifest" title="Go to cache manifest"><span class="httpCode successful">200</span><span class="label">Manifest URL:</span><span class="value">/offline/cache.manifest</span></a></p>
 		</div>
 		<div id="cacheInspector_manifestHeaders">
-			<h2 onclick="toggleManifestSection('cacheInspector_manifestHeaders');"><span class="icon"></span>Headers</h2>
+			<h2 onclick="toggleManifestHeaders();"><span class="icon"></span>Headers</h2>
 			<div class="wrapper"><pre>HTTP/1.1 200 OK
 <span class="highlight">Content-Type: text/cache-manifest</span>
 <span class="highlight problem">Content-Type: text/plain</span>
@@ -23,7 +23,7 @@ Content-Length: 7714
 Connection: keep-alive</pre></div>
 		</div>
 		<div id="cacheInspector_manifestContent">
-			<h2 onclick="toggleManifestSection('cacheInspector_manifestContent');"><span class="icon"></span>Content</h2>
+			<h2 onclick="toggleManifestContent();"><span class="icon"></span>Content</h2>
 			<div class="wrapper"><pre>CACHE MANIFEST
 # List of all resources required by this project
 
