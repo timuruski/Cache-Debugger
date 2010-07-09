@@ -7,119 +7,155 @@ var cacheInspector,
 	cacheInspector_manifestURL, 
 	cacheInspector_manifestHeaders, 
 	cacheInspector_manifestContent;
-	
-function fetchInspectorTemplate () {
-	safari.self.tab.dispatchMessage('fetchInspectorTemplate');
+
+function initializeInspector () {
+    safari.self.addEventListener('message', handleInspectorMessage, false);
+    safari.self.addEventListener('change', handleInspectorSettings, false);
+    fetchInspector();
+    // updateInspector();
 }
-function onFetchInspectorTemplate (message) {
+function updateInspector () {
+    if(!cacheInspector || !manifest) return;
+    setCacheStatus(applicationCache.status);
+    setManifestHttpStatus(manifest.status);
+    cacheInspector_manifestURL.getElementsByClassName('value')[0].innerText = manifest.url;
+    cacheInspector_manifestHeaders.getElementsByTagName('pre')[0].innerHTML = parseManifestHeaders(manifest.headers);
+    cacheInspector_manifestContent.getElementsByTagName('pre')[0].innerText = parseManifestContent(manifest.content);
+}
+
+function fetchInspector () {
+	safari.self.tab.dispatchMessage('fetchInspector');
+}
+function onFetchInspector (message) {
     var stub = document.createElement('div');
     stub.innerHTML = message;
 	cacheInspector = stub.children[0];
 	document.body.appendChild(cacheInspector);
-    // cacheInspector.addEventListener('mousedown', startDragCacheInspector, false);
+	
     cacheInspector_titlebar = document.getElementById('cacheInspector_titlebar');
-    cacheInspector_titlebar.addEventListener('mousedown', startDragCacheInspector, false);
     cacheInspector_closeBtn = document.getElementById('cacheInspector_closeBtn');
+	cacheInspector_status = document.getElementById('cacheInspector_status');
+	cacheInspector_manifestURL = document.getElementById('cacheInspector_manifestURL');
+	cacheInspector_manifestHeaders = document.getElementById('cacheInspector_manifestHeaders');
+	cacheInspector_manifestContent = document.getElementById('cacheInspector_manifestContent');
+	cacheInspector_manifestHeaders_toggle = document.getElementById('cacheInspector_manifestHeaders_toggle');
+	cacheInspector_manifestContent_toggle = document.getElementById('cacheInspector_manifestContent_toggle');
+	
+    // Reorganize these handlers to use bubbling.
+    // cacheInspector.addEventListener('mousedown', startDragCacheInspector, false);
+    cacheInspector_titlebar.addEventListener('mousedown', startDragCacheInspector, false);
     cacheInspector_closeBtn.addEventListener('click', hideCacheInspector, false);
-	cacheInspector_status = document.getElementById('cacheInspector_status');
-	cacheInspector_manifestURL = document.getElementById('cacheInspector_manifestURL');
-	cacheInspector_manifestHeaders = document.getElementById('cacheInspector_manifestHeaders');
-	cacheInspector_manifestContent = document.getElementById('cacheInspector_manifestContent');
-	// cacheInspector_manifestRaw.addEventListener('mousedown', startDragCacheInspector, false);
-	
-	// Use an invisible setting to store these states.
-	toggleManifestHeaders(safari.extension.manifestHeadersOpen);
-	toggleManifestContent(safari.extension.manifestContentOpen);
-}
-// function showCacheInspector () {
-//     cacheInspector.style.display = 'block';
-// }
-// function hideCacheInspector () {
-//     cacheInspector.style.display = 'none';
-// }
-// function toggleCacheInspector () {
-//     if(cacheInspector) {
-//         if(cacheInspector.style) showCacheInspector();
-//      else hideCacheInspector();
-//     }
-// }
-fetchInspectorTemplate();
-
-
-
-
-// Startup
-function init (event) {
-	cacheInspector = document.getElementById('cacheInspector');
-	cacheInspector.addEventListener('mousedown', startDragCacheInspector, false);
-	cacheInspector_closeBtn = document.getElementById('cacheInspector_closeBtn');
-	cacheInspector_closeBtn.addEventListener('click', hideCacheInspector, false);
-	cacheInspector_status = document.getElementById('cacheInspector_status');
-	cacheInspector_manifestURL = document.getElementById('cacheInspector_manifestURL');
-	cacheInspector_manifestHeaders = document.getElementById('cacheInspector_manifestHeaders');
-	cacheInspector_manifestContent = document.getElementById('cacheInspector_manifestContent');
-	// cacheInspector_manifestRaw.addEventListener('mousedown', startDragCacheInspector, false);
-	
-	// hideCacheInspector();
-	
-	showManifestSection('cacheInspector_manifestHeaders');
-	hideManifestSection('cacheInspector_manifestContent');
-	// showDetailedManifest();
-	// showFormattedManifest();
-	// showRawManifest();
-	
-	// loadManifest('../mobile-me.manifest');
-	// loadManifest('../html5demo.manifest');
-	
-	// cacheInspector_status.getElementsByClassName('value');
-	// cacheInspector_status.getElementsByClassName('statusCode');
+    cacheInspector_manifestHeaders_toggle.addEventListener('click', toggleManifestHeaders, false);
+    cacheInspector_manifestContent_toggle.addEventListener('click', toggleManifestContent, false);
+    
+	// Store these states by tab in the global-page.
+    toggleManifestHeaders(true);
+    toggleManifestContent(false);
+    
+    updateInspector();
 }
 
-
-// Manifest loading and parsing
-function loadManifestContent (url) {
-	cacheInspector_manifestURL.getElementsByClassName('value')[0].innerText = url;
-	var request = new XMLHttpRequest();
-	var onManifestLoaded = function (event) {
-		// console.log(request);
-		if(request.readyState === 4) {
-			parseManifest(request);
-			setManifestHttpStatus(request.status);
-		}
-	}
-	request.addEventListener('readystatechange', onManifestLoaded);
-	request.open('GET', url);
-	request.send();
-}
-function parseManifest (request) {
-	cacheInspector_manifestHeaders.getElementsByTagName('pre')[0].innerText = request.getAllResponseHeaders();
-	cacheInspector_manifestContent.getElementsByTagName('pre')[0].innerText = request.responseText;
-	// showCacheInspector();
-}
 function setManifestHttpStatus (status) {
-	var badge = cacheInspector_manifestURL.getElementsByClassName('httpCode')[0];
-	var c = '';
-	if(status >= 200 && status < 300) c = 'successful';
-	if(status >= 300 && status < 400) c = 'redirect';
-	if(status >= 400 && status < 500) c = 'clientError';
-	if(status >= 500) c = 'serverError';
-	badge.innerText = status;
-	badge.className = 'httpCode ' + c;
+	var badgeElement = cacheInspector_manifestURL.getElementsByClassName('httpCode')[0];
+	    badgeClassName = '';
+	if(status >= 200 && status < 300) badgeClassName = 'successful';
+	if(status >= 300 && status < 400) badgeClassName = 'redirect';
+	if(status >= 400 && status < 500) badgeClassName = 'clientError';
+	if(status >= 500) badgeClassName = 'serverError';
+	badgeElement.innerText = status;
+	badgeElement.className = 'httpCode ' + badgeClassName;
 	// cacheInspector_manifestURL.getElementsByClassName('httpCode')[0].innerText = status;
 }
 
-// Disclosure sections
+function setCacheStatus (status) {
+    var badgeElement = cacheInspector_status.getElementsByClassName('statusCode')[0], 
+        valueElement = cacheInspector_status.getElementsByClassName('value')[0], 
+        badgeClassName = '', 
+        valueText = '';
+    
+	switch(status) {
+		case 0:
+		    badgeClassName = '';
+			valueText = 'UNCACHED';
+			break;
+		case 1:
+            badgeClassName = 'idle';
+            valueText = 'IDLE';
+            break;
+		case 2:
+            badgeClassName = 'checking';
+            valueText = 'CHECKING';
+            break;
+		case 3:
+			badgeClassName = 'downloading';
+            valueText = 'DOWNLOADING';
+            break;
+		case 4:
+			badgeClassName = 'updateready';
+            valueText = 'UPDATEREADY';
+            break;
+	}
+    badgeElement.innerText = status;
+	badgeElement.className = 'statusCode ' + badgeClassName;
+	valueElement.innerText = valueText;
+}
+
+function parseManifestHeaders (input) {
+	var formatLine = function (line) {
+        var key = line.trimLeft().substring(0, line.indexOf(':')), 
+    	    value = line.substring(line.indexOf(':') + 1).trim(), 
+    	    className = [];
+    	if( isImportant(key) ) {
+    	    className.push('highlight');
+    	    if( !isValid(key, value) ) className.push('problem');
+    	    return '<span class="' + className.join(' ') + '">' + line.trim() + '</span>';
+        }
+
+        return line;
+    }
+    var isImportant = function (key) {
+        switch(key) {
+            case 'Content-Type':
+            case 'Cache-Control':
+            case 'Last-Modified':
+                return true;
+        }
+        // else
+        return false;
+    }
+    var isValid = function (key, value) {
+        console.log('[' + value + ']');
+        switch(key) {
+            case 'Content-Type':
+                return (value === 'text/cache-manifest');
+        }
+        
+        return true;
+    }
+    
+	var lines = input.split('\n');
+	for(var i = 0; i < lines.length; i++) {
+        lines[i] = formatLine( lines[i] );
+	}
+	
+	return lines.join('\n');
+}
+
+
+function parseManifestContent (str) {
+    return str;
+}
+
+// Disclosure sections (some DRY needed here)
 function isManifestHeadersOpen () { return cacheInspector_manifestHeaders.className === 'open'; }
 function toggleManifestHeaders (open) {
-    if(typeof open === 'undefined') { open = !isManifestHeadersOpen() }
+    if(typeof open === 'undefined' || typeof open === 'object') { open = !isManifestHeadersOpen() }
     cacheInspector_manifestHeaders.className = open ? 'open' : 'closed';
-    // safari.extension.settings.manifestHeadersOpen = open;
 }
 function isManifestContentOpen () { return cacheInspector_manifestContent.className === 'open'; }
 function toggleManifestContent (open) {
-    if(typeof open === 'undefined') { open = !isManifestContentOpen() }
+    if(typeof open === 'undefined' || typeof open === 'object') { open = !isManifestContentOpen() }
     cacheInspector_manifestContent.className = open ? 'open' : 'closed';
-    // safari.extension.settings.manifestContentOpen = open;
 }
 
 
@@ -142,6 +178,7 @@ function hideCacheInspector () {
 
 // Drag functionality
 function startDragCacheInspector (event) {
+    if(event.target === cacheInspector_closeBtn) return;
     // if(event.target === cacheInspector_manifestHeaders || event.target === cacheInspector_manifestContent) return;
 	// Initial click position
 	var startX = event.clientX, 
@@ -169,3 +206,25 @@ function startDragCacheInspector (event) {
 		window.removeEventListener('mouseup', onMouseUp, true);
 	}
 }
+
+
+// Misc
+function handleInspectorMessage (event) {
+    switch(event.name) {
+        case 'toggleCacheInspector':
+            toggleCacheInspector();
+            break;
+        case 'fetchInspector':
+            onFetchInspector(event.message);
+            break;
+    }
+}
+function handleInspectorSettings (event) {
+    //
+}
+
+
+
+// Start up
+// ========
+initializeInspector();

@@ -1,7 +1,14 @@
+// console.log(safari);
+
 // Setup
 // =====
-// console.log(safari);
-var manifestURL = document.getElementsByTagName('html')[0].getAttribute('manifest');
+var manifest = { 
+        url: document.getElementsByTagName('html')[0].getAttribute('manifest'), 
+        status: 0, 
+        headers: '', 
+        content: ''
+    };
+
 
 
 // Extension proxy event handling
@@ -12,23 +19,43 @@ function handleMessage (event) {
         case 'updateToolbarItem':
             updateToolbarItem();
             break;
-        case 'toggleCacheInspector':
-            toggleCacheInspector();
-            break;
-        case 'fetchInspectorTemplate':
-            onFetchInspectorTemplate(event.message);
-            break;
     }
 }
 
-safari.self.addEventListener('message', handleMessage, false);
 
 // Updating the toolbar item
 function updateToolbarItem () {
     var message = {};
-    message.status = window.applicationCache.status;
-    message.manifest = manifestURL;
+    message.status = applicationCache.status;
+    message.manifest = manifest.url;
     safari.self.tab.dispatchMessage('updateToolbarItem', message);
+}
+
+
+// Manifest loading and parsing
+// ============================
+function loadManifestContent (url) {
+	var request = new XMLHttpRequest();
+	var onManifestLoaded = function (event) {
+	    console.log(request.status);
+		// console.log(request);
+		if(request.readyState === 4) {
+		    manifest.status = request.status;
+		    manifest.headers = request.getAllResponseHeaders();
+		    manifest.content = request.responseText;
+            // updateInspector();
+            // parseManifest(request);
+            // setManifestHttpStatus(request.status);
+		}
+	}
+	request.addEventListener('readystatechange', onManifestLoaded);
+	request.open('GET', url);
+	request.send();
+}
+function parseManifest (request) {
+    // cacheInspector_manifestHeaders.getElementsByTagName('pre')[0].innerText = request.getAllResponseHeaders();
+    // cacheInspector_manifestContent.getElementsByTagName('pre')[0].innerText = request.responseText;
+	// showCacheInspector();
 }
 
 
@@ -39,17 +66,20 @@ function onCached (event) {
     // Sent when the update process finishes for the first time
     // —that is, the first time an application cache is saved.
     updateToolbarItem();
+    updateInspector();
 }
 function onChecking (event) {
     // console.log('applicationCache: checking');
     // Sent when the cache update process begins.
     updateToolbarItem();
+    updateInspector();
 }
 function onDownloading (event) {
     // console.log('applicationCache: downloading');
     // Sent when the update process begins downloading 
     // resources in the manifest file.
     updateToolbarItem();
+    updateInspector();
 }
 function onError (event) {
     // console.log('applicationCache: error');
@@ -61,6 +91,7 @@ function onNoUpdate (event) {
     // Sent when the update process finishes but the 
     // manifest file does not change.
     updateToolbarItem();
+    updateInspector();
 }
 function onProgress (event) {
     // Sent when each resource in the manifest file begins to download.
@@ -71,6 +102,7 @@ function onUpdateReady (event) {
     // the update process finishes, and there is a new 
     // application cache ready for use.
     updateToolbarItem();
+    updateInspector();
 }
 function onObsolete (event) {
     // Fired if the manifest file returns a 404 or 410.
@@ -100,4 +132,6 @@ applicationCache.addEventListener('updateready', onUpdateReady, false);
 // DOMApplicationCache.UPDATEREADY = 4
 // DOMApplicationCache.OBSOLETE    = 5
 
-
+// Setup
+if(manifest.url) loadManifestContent(manifest.url);
+safari.self.addEventListener('message', handleMessage, false);

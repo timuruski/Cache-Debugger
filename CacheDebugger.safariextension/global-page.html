@@ -59,9 +59,9 @@
 				case 'updateToolbarItem':
 					updateToolbarItem(event);
 					break;
-				case 'fetchInspectorTemplate':
+				case 'fetchInspector':
 					var pageProxy = event.target.browserWindow.activeTab.page;
-					if(pageProxy) pageProxy.dispatchMessage('fetchInspectorTemplate', inspectorTemplate);
+					if(pageProxy) pageProxy.dispatchMessage('fetchInspector', inspectorTemplate);
 					break;
 			}
 		}
