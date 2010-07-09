@@ -21,18 +21,16 @@ A Safari 5 extension for debugging HTML5 offline caches. Displays the cache stat
 
 ### Version 1.1: ###
 * Update toolbar icon to match Safari style more
-* Store inspector state and position in extension settings
+* Update inspector as the cache updates
+* Display cache status in inspector
 * Inspector floats above all content
 * Toolbar icon responds to applicationCache events, shows error state. *done*
-* Buttons in the inspector for swapping and updating the cache
 * Style inspector scrollbar *done*
-* Animate inspector hide/show
-* Make inspector resizable
 
 
 ### Version 1.2: ###
-* Update inspector as the cache updates
-* Display cache status in inspector
+* Buttons in the inspector for swapping and updating the cache
+* Store inspector state and position in extension settings
 * Show expiry headers for files in manifest
 * Collapsable sections in manifest
 * A way to clear the cache? User configurable JS call?
