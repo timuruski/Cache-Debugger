@@ -41,11 +41,12 @@
 			<key>End</key>
 			<array>
 				<string>inject.js</string>
+				<string>inspector.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
 		<array>
-			<string>inject.css</string>
+			<string>inspector.css</string>
 		</array>
 	</dict>
 	<key>Description</key>
