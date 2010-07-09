@@ -4,7 +4,6 @@
 	<script type="text/javascript">
 		var inspectorTemplate;
 		function loadInspectorTemplate () {
-			console.log(safari.extension.baseURI + 'inspector.html');
 			var request = new XMLHttpRequest(), 
 				onReadyStateChange = function (event) {
 				if(request.readyState === 4) {
