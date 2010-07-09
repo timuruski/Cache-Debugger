@@ -124,7 +124,6 @@ function parseManifestHeaders (input) {
         return false;
     }
     var isValid = function (key, value) {
-        console.log('[' + value + ']');
         switch(key) {
             case 'Content-Type':
                 return (value === 'text/cache-manifest');
