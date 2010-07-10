@@ -1,0 +1,184 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Cache Inspector</title>
+	<script src="../CacheDebugger.safariextension/inspector.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var manifest = { 
+	        url: 'cache.manifest', 
+	        status: 200, 
+	        events: [], 
+	        headers: '', 
+	        content: ''
+	    };
+		window.onload = function (event) {
+			initializeInspector( document.getElementById('cacheInspector)') );
+		}
+	</script>
+	<link rel="stylesheet" href="../CacheDebugger.safariextension/inspector.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	
+</head>
+<body>
+	<h2>Cache Manifest tests:</h2>
+	<ul>
+		<li>applicationCache status</li>
+		<li>applicationCache events</li>
+		<li>Cache manifest URL</li>
+		<li>Cache manifest HTTP code</li>
+		<li>Cache manifest HTTP headers
+			<ul>
+				<li>Content-Type</li>
+				<li>Last-Modified</li>
+				<li>Cache-Control</li>
+				<li>Age?</li>
+				<li>Expires?</li>
+			</ul>
+		</li>
+		<li>Cache manifest content</li>
+		<li>Cache manifest format</li>
+	</ul>
+	<div id="cacheInspector">
+		<div id="cacheInspector_titlebar">
+			<p id="cacheInspector_closeBtn"></p>
+			<p id="cacheInspector_title">Cache Inspector</p>
+		</div>
+		<div id="cacheInspector_body">
+			<p id="cacheInspector_error" style="display: none;">Cache Error</p>
+			<div id="cacheInspector_manifestMetadata">
+				<p id="cacheInspector_status"><span class="statusCode">&hellip;</span><span class="label">Status:</span><span class="value">null</span></p>
+				<p id="cacheInspector_manifestURL"><span class="httpCode">&hellip;</span><span class="label">Manifest URL:</span><span class="value">null</span></p>
+			</div>
+			<div id="cacheInspector_eventTimeline">
+				<h2 id="cacheInspector_eventTimeline_toggle"><span class="icon"></span>Event Timeline</h2>
+				<div class="wrapper">
+					<ul>
+						<li><span class="event checking">Checking</span></li>
+						<li><span class="event downloading">Downloading</span></li>
+						<li><span class="event progress">Progress</span></li>
+						<li><span class="event progress">Progress</span></li>
+						<li><span class="event error">Error</span></li>
+						<li><span class="event updateready">Update Ready</span></li>
+						<li><span class="event noupdate">No Update</span></li>
+						<li><span class="event obsolete">Obsolete</span></li>
+					</ul>
+				</div>
+			</div>
+			<div id="cacheInspector_manifestHeaders">
+				<h2 id="cacheInspector_manifestHeaders_toggle"><span class="icon"></span>Headers</h2>
+				<div class="wrapper"><pre>HTTP/1.1 200 OK
+<span class="highlight">Content-Type: text/cache-manifest</span>
+<span class="highlight problem">Content-Type: text/plain</span>
+<span class="highlight">Cache-Control: private</span>
+Server: Apache/1.3.33 (Darwin)
+<span class="highlight">Last-Modified: Fri, 25 Jun 2010 23:20:58 GMT</span>
+ETag: "94661da-1e22-4c2539da"
+Cteonnt-Length: 7714
+Date: Sun, 04 Jul 2010 14:36:05 GMT
+Content-Length: 7714
+Connection: keep-alive</pre></div>
+			</div>
+			<div id="cacheInspector_manifestContent">
+				<h2 id="cacheInspector_manifestContent_toggle"><span class="icon"></span>Content</h2>
+				<div class="wrapper"><pre>CACHE MANIFEST
+# List of all resources required by this project
+
+https://static2.me.com/my/core_mail/mail_bundles_wrapper/en/2E52/stylesheet-packed.css
+https://static3.me.com/my/sproutcore/desktop/en/3b645/images/icons/shared.png
+https://static2.me.com/my/sproutcore/foundation/en/3b645/blank.gif
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/sprite.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/badges.png
+https://static1.me.com/my/shared/core/en/3b645/images/color_picker/color_picker_sprite.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ffffff.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_assets.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_controls.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_repeat_x.png
+https://static3.me.com/my/shared/core/en/3b645/images/blank.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_assets_mail.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_repeat_y.png
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/dialog_background.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/sprites/me_scrollbar_arrows.png
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_141414.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_f3f5f5.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_1f1f1f.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_fafafa.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_2f2f2f.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_464646.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_dfe1e3.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ebebeb.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_d6d6d7.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_ffffff_50pct.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_sidebar_sel.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_message_window.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_white_linen.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_16px_dark_linen.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_141414.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_f3f5f5.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_1f1f1f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_fafafa.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_2f2f2f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_30466a.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_464646.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_dfe1e3.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_d6d6d7.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_ffffff.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_ffffff_50pct.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_24px_e9ddc5.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_141414.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_f3f5f5.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_1f1f1f.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_fafafa.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_2f2f2f.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_464646.gif
+https://static3.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_dfe1e3.gif
+https://static1.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_d6d6d7.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_ffffff.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_ffffff_50pct.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_white_linen.gif
+https://static2.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_dark_linen.gif
+https://static4.me.com/my/shared/apple_theme_v2/en/3b645/resources/images/spinners/spinner_32px_2b3d5e.gif
+https://static2.me.com/my/core_mail/mail_theme/en/2E52/images/mail_assets.png
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/images/me_controls_mail.png
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/images/me_repeat_x_mail.png
+https://static1.me.com/my/core_mail/mail_theme/en/2E52/images/separator_e0e0e0.png
+https://static3.me.com/my/mail/en/2E52/stylesheet.css
+https://static3.me.com/my/core_mail/mail_bundles_wrapper/en/2E52/javascript-packed.js
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/apps/mail.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/apps/contacts.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/calendar.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/gallery.png
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/apps/idisk.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/apps/fmip.png
+https://static3.me.com/my/shared/core/en/3b645/error_catch.js
+https://static1.me.com/my/shared/core/en/3b645/images/app_switcher/selected.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/active.png
+https://static3.me.com/my/shared/core/en/3b645/images/app_switcher/apps/dates/1.png
+https://static4.me.com/my/shared/core/en/3b645/images/app_switcher/apps/days/monday.png
+https://static2.me.com/my/shared/core/en/3b645/images/app_switcher/middle.png
+https://static1.me.com/my/shared/core/en/3b645/images/progress/ind-bg-fill.png
+https://static1.me.com/my/mail/en/2E52/javascript.js
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/stylesheet-packed.css
+https://static3.me.com/my/core_mail/mail_theme/en/2E52/stylesheet.css
+https://static2.me.com/my/core_mail/mail_theme/en/2E52/javascript-packed.js
+https://static4.me.com/my/core_mail/mail_theme/en/2E52/javascript.js
+
+
+NETWORK:
+http://www.me.com
+https://www.me.com
+https://static1.me.com
+https://static2.me.com
+https://static3.me.com
+https://static4.me.com
+https://webcourier.push.apple.com
+https://webcourier.sandbox.push.apple.com</pre></div>
+			</div>
+		</div>
+	</div>
+	<ul>
+		<!-- <li><a href="mobile-me.manifest" onclick="loadManifestContent(this.href); return false;">Load Mobile Me manifest</a></li> -->
+		<li><a href="https://www.me.com/mail/app.manifest" onclick="loadManifestContent(this.href); return false;">Load Mobile Me manifest</a></li>
+		<li><a href="https://www.me.com/mail/app2.manifest" onclick="loadManifestContent(this.href); return false;">Load Mobile Me manifest 2</a></li>
+		<li><a href="html5demo.manifest" onclick="loadManifestContent(this.href); return false;">Load HTML5 Demos manifest</a></li>
+	</ul>
+</body>
+</html>

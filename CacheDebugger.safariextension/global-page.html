@@ -76,11 +76,12 @@
 				// Find the window for this event and update its toolbar item.
 				toolbarItem = safari.extension.toolbarItems[k];
 				if(toolbarItem.browserWindow === event.target.browserWindow) {
-					toolbarItem.disabled = (event.message.status === 0 || event.message.status === null);
+					toolbarItem.disabled = (event.message.status === 0 || event.message.status == null);
+					toolbarItem.disabled = (event.message.manifestURL == null);
 					// toolbarItem.disabled = false;
 					toolbarItem.badge = event.message.status;
 					toolTip = 'Status: ' + cacheStatusToString(event.message.status);
-					if(event.message.manifest) toolTip = toolTip + '\nManifest: ' + event.message.manifest;
+					if(event.message.manifestURL) toolTip = toolTip + '\nManifest: ' + event.message.manifestURL;
 					toolbarItem.toolTip = toolTip;
 				}
 			}

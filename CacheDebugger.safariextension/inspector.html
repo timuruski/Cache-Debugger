@@ -4,9 +4,14 @@
 		<p id="cacheInspector_title">Cache Inspector</p>
 	</div>
 	<div id="cacheInspector_body">
+		<p id="cacheInspector_error" style="display: none;">Cache Error</p>
 		<div id="cacheInspector_manifestMetadata">
 			<p id="cacheInspector_status"><span class="statusCode">&hellip;</span><span class="label">Status:</span><span class="value">null</span></p>
 			<p id="cacheInspector_manifestURL"><span class="httpCode">&hellip;</span><span class="label">Manifest URL:</span><span class="value">null</span></p>
+		</div>
+		<div id="cacheInspector_eventTimeline">
+			<h2 id="cacheInspector_eventTimeline_toggle"><span class="icon"></span>Event Timeline</h2>
+			<div class="wrapper"><ul></ul></div>
 		</div>
 		<div id="cacheInspector_manifestHeaders">
 			<h2 id="cacheInspector_manifestHeaders_toggle"><span class="icon"></span>Headers</h2>

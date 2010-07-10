@@ -5,8 +5,10 @@
 var manifest = { 
         url: document.getElementsByTagName('html')[0].getAttribute('manifest'), 
         status: 0, 
+        events: [], 
         headers: '', 
-        content: ''
+        content: '', 
+        error: false
     };
 
 
@@ -17,6 +19,7 @@ function handleMessage (event) {
     // console.log('Message: ' + event.name);
     switch(event.name) {
         case 'updateToolbarItem':
+            updateInspector();
             updateToolbarItem();
             break;
     }
@@ -27,7 +30,7 @@ function handleMessage (event) {
 function updateToolbarItem () {
     var message = {};
     message.status = applicationCache.status;
-    message.manifest = manifest.url;
+    message.manifestURL = manifest.url;
     safari.self.tab.dispatchMessage('updateToolbarItem', message);
 }
 
@@ -37,8 +40,6 @@ function updateToolbarItem () {
 function loadManifestContent (url) {
 	var request = new XMLHttpRequest();
 	var onManifestLoaded = function (event) {
-	    console.log(request.status);
-		// console.log(request);
 		if(request.readyState === 4) {
 		    manifest.status = request.status;
 		    manifest.headers = request.getAllResponseHeaders();
@@ -61,62 +62,45 @@ function parseManifest (request) {
 
 // Monitor events from the applicationCache object
 // ===============================================
-function onCached (event) {
-    // console.log('applicationCache: cached');
-    // Sent when the update process finishes for the first time
-    // —that is, the first time an application cache is saved.
+function onCacheEvent (event) {
+    // console.log(event);
+    manifest.events.push(event);
+    if(event.type === 'error') { manifest.error = true; }
+    // switch(event.type) {
+    //     case 'cached':
+    //     case 'checking':
+    //     case 'downloading':
+    //     case 'error':
+    //     case 'noupdate':
+    //     case 'progress':
+    //     case 'updateready':
+    //     case 'obsolete':
+    // }
     updateToolbarItem();
     updateInspector();
-}
-function onChecking (event) {
-    // console.log('applicationCache: checking');
-    // Sent when the cache update process begins.
-    updateToolbarItem();
-    updateInspector();
-}
-function onDownloading (event) {
-    // console.log('applicationCache: downloading');
-    // Sent when the update process begins downloading 
-    // resources in the manifest file.
-    updateToolbarItem();
-    updateInspector();
-}
-function onError (event) {
-    // console.log('applicationCache: error');
-    // Sent when an error occurs.
-    // - Should change the icon in this case.
-}
-function onNoUpdate (event) {
-    // console.log('applicationCache: no-update');
-    // Sent when the update process finishes but the 
-    // manifest file does not change.
-    updateToolbarItem();
-    updateInspector();
-}
-function onProgress (event) {
-    // Sent when each resource in the manifest file begins to download.
-}
-function onUpdateReady (event) {
-    // console.log('applicationCache: update-ready');
-    // Sent when there is an existing application cache, 
-    // the update process finishes, and there is a new 
-    // application cache ready for use.
-    updateToolbarItem();
-    updateInspector();
-}
-function onObsolete (event) {
-    // Fired if the manifest file returns a 404 or 410.
-    // This results in the application cache being deleted.
 }
 
-applicationCache.addEventListener('cached', onCached, false);
-applicationCache.addEventListener('checking', onChecking, false);
-applicationCache.addEventListener('downloading', onDownloading, false);
-applicationCache.addEventListener('error', onError, false);
-applicationCache.addEventListener('noupdate', onNoUpdate, false);
-// applicationCache.addEventListener('progress', onProgress, false);
-applicationCache.addEventListener('updateready', onUpdateReady, false);
-// applicationCache.addEventListener('obsolete', onObsolete, false);
+// Sent when the update process finishes for the first time
+// —that is, the first time an application cache is saved.
+
+applicationCache.addEventListener('cached', onCacheEvent, false);
+// Sent when the cache update process begins.
+applicationCache.addEventListener('checking', onCacheEvent, false);
+// Sent when the update process begins downloading resources in the manifest file.
+applicationCache.addEventListener('downloading', onCacheEvent, false);
+// Sent when an error occurs.
+// - Should change the icon in this case.
+applicationCache.addEventListener('error', onCacheEvent, false);
+// Sent when the update process finishes but the manifest file does not change.
+applicationCache.addEventListener('noupdate', onCacheEvent, false);
+// Sent when each resource in the manifest file begins to download.
+applicationCache.addEventListener('progress', onCacheEvent, false);
+// Sent when there is an existing application cache, the update process 
+// finishes, and there is a new application cache ready for use.
+applicationCache.addEventListener('updateready', onCacheEvent, false);
+// Fired if the manifest file returns a 404 or 410.
+// This results in the application cache being deleted.
+applicationCache.addEventListener('obsolete', onCacheEvent, false);
 
 // applicationCache.swapCache
 // Replaces the active cache with the latest version.
