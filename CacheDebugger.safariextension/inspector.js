@@ -93,19 +93,20 @@ function initializeInspector (element) {
     cacheInspector_manifestHeaders_toggle.addEventListener('click', toggleManifestHeaders, false);
     cacheInspector_manifestContent_toggle.addEventListener('click', toggleManifestContent, false);
     
+    hideCacheInspector();
     updateInspector();
 }
 
 function setManifestHttpStatus (status) {
-	var badgeElement = cacheInspector_manifestURL.getElementsByClassName('httpCode')[0];
-	    badgeClassName = '';
-	if(status >= 200 && status < 300) badgeClassName = 'successful';
-	if(status >= 300 && status < 400) badgeClassName = 'redirect';
-	if(status >= 400 && status < 500) badgeClassName = 'clientError';
-	if(status >= 500) badgeClassName = 'serverError';
-	badgeElement.innerText = status;
-	badgeElement.className = 'httpCode ' + badgeClassName;
-	// cacheInspector_manifestURL.getElementsByClassName('httpCode')[0].innerText = status;
+    var badgeElement = cacheInspector_manifestURL.getElementsByClassName('httpCode')[0];
+        badgeClassName = '';
+    if(status >= 200 && status < 300) badgeClassName = 'successful';
+    if(status >= 300 && status < 400) badgeClassName = 'redirect';
+    if(status >= 400 && status < 500) badgeClassName = 'clientError';
+    if(status >= 500) badgeClassName = 'serverError';
+    badgeElement.innerText = status;
+    badgeElement.className = 'httpCode ' + badgeClassName;
+    // cacheInspector_manifestURL.getElementsByClassName('httpCode')[0].innerText = status;
 }
 
 function setCacheStatus (status) {
@@ -235,18 +236,18 @@ function toggleManifestContent (open) {
 
 // Manifest inspector
 function toggleCacheInspector () {
-    // document.getElementById('cacheInspector') ? hideCacheInspector() : showCacheInspector();
+    document.getElementById('cacheInspector') ? hideCacheInspector() : showCacheInspector();
+    // cacheInspector.style.display = (cacheInspector.style.display === 'block') ? 'none' : 'block';
     // cacheInspector.style.opacity = (cacheInspector.style.opacity === 0) ? 1 : 0;
-    cacheInspector.style.display = (cacheInspector.style.display === 'block') ? 'none' : 'block';
 }
 function showCacheInspector () {
-	// document.body.appendChild(cacheInspector);
     cacheInspector.style.display = 'block';
+    document.body.appendChild(cacheInspector);
     // cacheInspector.style.opacity = 1;
 }
 function hideCacheInspector () {
-	// document.body.removeChild(cacheInspector);
     cacheInspector.style.display = 'none';
+    document.body.removeChild(cacheInspector);
     // cacheInspector.style.opacity = 0;
 }
 
