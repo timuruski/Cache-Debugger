@@ -1,0 +1,3 @@
+## Bugs
+
+* Report of console text appearing in outgoing emails in Gmail. @fixed
